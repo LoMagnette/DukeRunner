@@ -74,14 +74,14 @@ public class JavaReskinTest {
         var o = new Obstacle.ConferenceStage(100);
         assertEquals(6.0f, o.width(), "conference stage width");
         assertEquals(26.0f, o.height(), "conference stage height");
-        assertFalse(o.barkable(), "conference stage not barkable");
+        assertFalse(o.throwable(), "conference stage not throwable");
     }
 
     public void testLaptopStackWideProperties() {
         var o = new Obstacle.LaptopStack(100, true);
         assertEquals(18.0f, o.width(), "laptop stack wide width");
         assertEquals(9.0f, o.height(), "laptop stack wide height");
-        assertFalse(o.barkable(), "laptop stack not barkable");
+        assertFalse(o.throwable(), "laptop stack not throwable");
     }
 
     public void testLaptopStackTallProperties() {
@@ -100,13 +100,37 @@ public class JavaReskinTest {
         var o = new Obstacle.ConfusedIntern(100);
         assertEquals(14.0f, o.width(), "confused intern width");
         assertEquals(14.0f, o.height(), "confused intern height");
-        assertTrue(o.barkable(), "confused intern is barkable");
+        assertTrue(o.throwable(), "confused intern is throwable");
     }
 
     public void testSlowBuildServerProperties() {
         var o = new Obstacle.SlowBuildServer(100);
         assertEquals(7.0f, o.width(), "slow build server width");
         assertEquals(10.0f, o.height(), "slow build server height");
-        assertTrue(o.barkable(), "slow build server is barkable");
+        assertTrue(o.throwable(), "slow build server is throwable");
+    }
+
+    // --- Task 4: bark → throw renames ---
+
+    public void testPlayerThrowCooldown() {
+        var p = new Player();
+        assertTrue(p.canThrow(), "player should be able to throw initially");
+        p.performThrow();
+        assertFalse(p.canThrow(), "player should not throw during cooldown");
+        assertEquals(Player.THROW_COOLDOWN_TICKS, p.throwCooldownTicks, "cooldown should be set");
+    }
+
+    public void testThrowRange() {
+        var p = new Player();
+        var intern = new Obstacle.ConfusedIntern(Player.X + Player.WIDTH + 10);
+        assertTrue(Physics.inThrowRange(p, intern), "intern in throw range");
+
+        var farIntern = new Obstacle.ConfusedIntern(Player.X + Player.WIDTH + Physics.THROW_RANGE + 10);
+        assertFalse(Physics.inThrowRange(p, farIntern), "far intern out of throw range");
+    }
+
+    public void testConferenceStageNotThrowable() {
+        var o = new Obstacle.ConferenceStage(100);
+        assertFalse(o.throwable(), "conference stage not throwable");
     }
 }

@@ -17,7 +17,7 @@ public class Game {
     Ground ground;
     List<Obstacle> obstacles = new ArrayList<>();
     Spawner spawner;
-    int woofTimer;
+    int throwTimer;
     boolean quit;
     int canvasWidth = 160;
     int canvasHeight = 80;
@@ -41,7 +41,7 @@ public class Game {
         ground.setMaxX(canvasWidth);
         obstacles.clear();
         spawner = new Spawner();
-        woofTimer = 0;
+        throwTimer = 0;
     }
 
     public boolean handleEvent(KeyEvent k) {
@@ -64,11 +64,11 @@ public class Game {
                     yield true;
                 }
                 if (k.isCharIgnoreCase('b') || k.isDown()) {
-                    if (player.canBark()) {
-                        player.bark();
-                        woofTimer = 10;
+                    if (player.canThrow()) {
+                        player.performThrow();
+                        throwTimer = 10;
                         System.out.print("\007");
-                        obstacles.removeIf(o -> o.barkable() && Physics.inBarkRange(player, o));
+                        obstacles.removeIf(o -> o.throwable() && Physics.inThrowRange(player, o));
                     }
                     yield true;
                 }
@@ -124,7 +124,7 @@ public class Game {
         spawner.maybeSpawn(score, speed, canvasWidth + 5)
                 .ifPresent(obstacles::add);
 
-        if (woofTimer > 0) woofTimer--;
+        if (throwTimer > 0) throwTimer--;
     }
 
     public void updateCanvasSize(int width, int height) {

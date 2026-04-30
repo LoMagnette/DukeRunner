@@ -28,7 +28,7 @@ public class Spawner {
 
         Obstacle obstacle = createRandomObstacle(spawnX);
         ticksSinceLastSpawn = 0;
-        lastWasBarkOnly = obstacle.barkable();
+        lastWasBarkOnly = obstacle.throwable();
         return Optional.of(obstacle);
     }
 

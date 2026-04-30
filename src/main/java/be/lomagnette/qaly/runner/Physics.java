@@ -4,7 +4,7 @@ public final class Physics {
     static final float GROUND_Y = 8.0f;
     static final float GRAVITY = 0.5f;
     static final float JUMP_VELOCITY = 7.0f;
-    static final float BARK_RANGE = 40.0f;
+    static final float THROW_RANGE = 40.0f;
 
     private Physics() {}
 
@@ -41,18 +41,18 @@ public final class Physics {
         return px < ox + ow && px + pw > ox && py < oy + oh && py + ph > oy;
     }
 
-    public static boolean inBarkRange(Player p, Obstacle o) {
+    public static boolean inThrowRange(Player p, Obstacle o) {
         float playerRight = Player.X + Player.WIDTH;
         float obstacleLeft = o.x();
 
-        // Horizontal: obstacle must be ahead of player and within bark range
+        // Horizontal: obstacle must be ahead of player and within throw range
         boolean inHorizontalRange = obstacleLeft > Player.X
-                && obstacleLeft < playerRight + BARK_RANGE;
+                && obstacleLeft < playerRight + THROW_RANGE;
 
         // Vertical: player and obstacle must overlap vertically
         boolean inVerticalRange = p.y < o.bottomY() + o.height()
                 && p.y + Player.HEIGHT > o.bottomY();
 
-        return o.barkable() && inHorizontalRange && inVerticalRange;
+        return o.throwable() && inHorizontalRange && inVerticalRange;
     }
 }

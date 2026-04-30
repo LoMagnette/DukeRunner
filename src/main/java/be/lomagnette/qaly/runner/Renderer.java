@@ -136,16 +136,16 @@ public final class Renderer {
                 .constraints(Constraint.fill(), Constraint.fill(), Constraint.fill())
                 .split(area);
 
-        String barkStatus = game.player.canBark()
-                ? "[BARK READY]"
-                : "[BARK " + "\u00b7".repeat(Math.max(1, game.player.barkCooldownTicks / 10)) + "]";
-        var barkColor = game.player.canBark() ? Color.GREEN : Color.DARK_GRAY;
+        String throwStatus = game.player.canThrow()
+                ? "[THROW READY]"
+                : "[CATCHING " + "\u00b7".repeat(Math.max(1, game.player.throwCooldownTicks / 10)) + "]";
+        var throwColor = game.player.canThrow() ? Color.GREEN : Color.DARK_GRAY;
 
-        var barkWidget = Paragraph.builder()
-                .text(Text.from(barkStatus).fg(barkColor))
+        var throwWidget = Paragraph.builder()
+                .text(Text.from(throwStatus).fg(throwColor))
                 .style(Style.create().bold())
                 .build();
-        frame.renderWidget(barkWidget, cols.get(0));
+        frame.renderWidget(throwWidget, cols.get(0));
 
         var seasonWidget = Paragraph.builder()
                 .text(Text.from(game.era.label()).fg(game.era.accentColor()))
@@ -175,7 +175,7 @@ public final class Renderer {
                     paintDecorations(ctx, game);
                     paintObstacles(ctx, game);
                     paintPlayer(ctx, game);
-                    paintWoofEffect(ctx, game);
+                    paintThrowEffect(ctx, game);
                     paintParticles(ctx, cw, ch, game.era, game.score);
                 })
                 .build();
@@ -236,7 +236,7 @@ public final class Renderer {
 
     private static void paintPlayer(dev.tamboui.widgets.canvas.Context ctx, Game game) {
         Sprites.DogSprite sprite;
-        if (game.woofTimer > 5) {
+        if (game.throwTimer > 5) {
             sprite = Sprites.dogBarking();
         } else if (!game.player.grounded) {
             sprite = Sprites.dogJumping();
@@ -251,9 +251,9 @@ public final class Renderer {
         }
     }
 
-    private static void paintWoofEffect(dev.tamboui.widgets.canvas.Context ctx, Game game) {
-        if (game.woofTimer > 0) {
-            ctx.print(Player.X + Player.WIDTH + 3, game.player.y + Player.HEIGHT + 2, "WOOF!");
+    private static void paintThrowEffect(dev.tamboui.widgets.canvas.Context ctx, Game game) {
+        if (game.throwTimer > 0) {
+            ctx.print(Player.X + Player.WIDTH + 3, game.player.y + Player.HEIGHT + 2, "throw new Exception()!");
         }
     }
 

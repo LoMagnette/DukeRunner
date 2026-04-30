@@ -15,7 +15,7 @@ public sealed abstract class Obstacle
     public abstract float bottomY();
     public abstract float width();
     public abstract float height();
-    public abstract boolean barkable();
+    public abstract boolean throwable();
     public abstract ObstacleType type();
 
     public enum ObstacleType { CONFERENCE_STAGE, LAPTOP_STACK_WIDE, LAPTOP_STACK_TALL, COFFEE_SPILL, CONFUSED_INTERN, SLOW_BUILD_SERVER }
@@ -25,7 +25,7 @@ public sealed abstract class Obstacle
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return 6; }
         public float height() { return 26; }
-        public boolean barkable() { return false; }
+        public boolean throwable() { return false; }
         public ObstacleType type() { return ObstacleType.CONFERENCE_STAGE; }
     }
 
@@ -36,7 +36,7 @@ public sealed abstract class Obstacle
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return wide ? 18 : 8; }
         public float height() { return wide ? 9 : 25; }
-        public boolean barkable() { return false; }
+        public boolean throwable() { return false; }
         public ObstacleType type() { return wide ? ObstacleType.LAPTOP_STACK_WIDE : ObstacleType.LAPTOP_STACK_TALL; }
     }
 
@@ -45,7 +45,7 @@ public sealed abstract class Obstacle
         public float bottomY() { return Physics.GROUND_Y - 1; }
         public float width() { return 22; }
         public float height() { return 6; }
-        public boolean barkable() { return false; }
+        public boolean throwable() { return false; }
         public ObstacleType type() { return ObstacleType.COFFEE_SPILL; }
     }
 
@@ -54,7 +54,7 @@ public sealed abstract class Obstacle
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return 14; }
         public float height() { return 14; }
-        public boolean barkable() { return true; }
+        public boolean throwable() { return true; }
         public ObstacleType type() { return ObstacleType.CONFUSED_INTERN; }
     }
 
@@ -63,7 +63,7 @@ public sealed abstract class Obstacle
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return 7; }
         public float height() { return 10; }
-        public boolean barkable() { return true; }
+        public boolean throwable() { return true; }
         public ObstacleType type() { return ObstacleType.SLOW_BUILD_SERVER; }
     }
 }
