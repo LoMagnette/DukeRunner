@@ -69,7 +69,7 @@ public final class Renderer {
                 .yBounds(0, ch)
                 .marker(Marker.BRAILLE)
                 .paint(ctx -> {
-                    var sitting = Sprites.dogSitting();
+                    var sitting = Sprites.dukeSitting();
                     double offsetX = Math.max(0, (cw - 38) / 2.0);
                     double offsetY = Math.max(0, (ch - 24) / 2.0);
                     ctx.draw(Points.of(
@@ -235,19 +235,19 @@ public final class Renderer {
     }
 
     private static void paintPlayer(dev.tamboui.widgets.canvas.Context ctx, Game game) {
-        Sprites.DogSprite sprite;
+        Sprites.CharSprite sprite;
         if (game.throwTimer > 5) {
-            sprite = Sprites.dogBarking();
+            sprite = Sprites.dukeThrowing();
         } else if (!game.player.grounded) {
-            sprite = Sprites.dogJumping();
+            sprite = Sprites.dukeJumping();
         } else {
-            sprite = Sprites.dogRunning();
+            sprite = Sprites.dukeRunning();
         }
         double dx = Player.X - 10;
         double dy = game.player.y;
         ctx.draw(Points.of(Sprites.translate(sprite.body(), dx, dy), Color.WHITE));
-        if (sprite.tongue().length > 0) {
-            ctx.draw(Points.of(Sprites.translate(sprite.tongue(), dx, dy), Color.RED));
+        if (sprite.accent().length > 0) {
+            ctx.draw(Points.of(Sprites.translate(sprite.accent(), dx, dy), Color.RED));
         }
     }
 

@@ -7,136 +7,134 @@ public final class Sprites {
 
     private Sprites() {}
 
-    // ── Dog sprite data ──────────────────────────────────────────
-    // Body (white) + tongue accent (red), rendered as separate layers.
+    // ── Character sprite data ─────────────────────────────────────
+    // Body (white) + accent (red nose), rendered as separate layers.
 
-    public record DogSprite(double[][] body, double[][] tongue) {}
+    public record CharSprite(double[][] body, double[][] accent) {}
 
-    // ── Dog sprites (braille bitmaps, ~36w × 24h) ────────────────
+    // ── Duke sprites (braille bitmaps, ~36w × 24h) ──────────────
     // '#' = lit dot. First row = top (highest y). Facing right.
-    // ~36 dots wide × 24 dots tall → 18 terminal cols × 6 terminal rows
+    // Duke = Java mascot: round white body, triangular red nose
 
-    public static DogSprite dogRunning() {
+    public static CharSprite dukeRunning() {
         double[][] body = fromBitmap(
-            "               # ###                  ",  // shaggy ear tufts
-            "              ########                 ",  // ear + head top
-            "             ##########                ",  // head (round)
-            "            ############               ",  // head wider
-            "            ## #########               ",  // eye + face
-            "            #############              ",  // face / nose
-            "           ################            ",  // beard (wider!)
-            "           ##################          ",  // beard → body
-            "   # ###  #####################        ",  // bushy tail + body
-            "   ######  ######################      ",  // tail + body
-            "    #####  #######################     ",  // body
-            "     ####  ########################    ",  // body
-            "      #### #########################   ",  // body
-            "       ############################    ",  // body widest
-            "       # ##########################    ",  // fur tuft on back
-            "        ###########################    ",  // body
-            "         #########################     ",  // body tapering
-            "          ######################       ",  // body narrowing
-            "           #########    ##########     ",  // upper legs
-            "           ########      #########     ",  // knee narrows
-            "          #########      ##########    ",  // legs widen
-            "          #########      ##########    ",  // legs
-            "         ##########      ###########   ",  // paws (feathered)
-            "         ## #######      ## ########   "   // paw toes
+            "                  ######               ",  // head top
+            "                ##########             ",  // head upper
+            "              ##############           ",  // head round
+            "             ################          ",  // head widest
+            "            ##################         ",  // head + eye area
+            "            ####  ############         ",  // eye (gap) + face
+            "            ##################         ",  // face
+            "             #################         ",  // chin / jawline
+            "              ################         ",  // neck → body
+            "             ##################        ",  // shoulders
+            "            ####################       ",  // upper body
+            "           ######################      ",  // body widest
+            "           ######################      ",  // body
+            "            ####################       ",  // body taper
+            "            ####################       ",  // body
+            "             ##################        ",  // lower body
+            "              ################         ",  // waist
+            "              ################         ",  // hips
+            "             ######    ########        ",  // upper legs
+            "            ######      ########       ",  // legs stride
+            "           ######        ########      ",  // legs extended
+            "          ######          ########     ",  // legs wide (running)
+            "         #######          #########    ",  // feet
+            "         ####              ######      "   // toes
         );
-        double[][] tongue = { {24, 19}, {24, 18} };
-        return new DogSprite(body, tongue);
+        double[][] accent = { {23, 17}, {24, 17}, {24, 16}, {25, 16} };  // red triangular nose
+        return new CharSprite(body, accent);
     }
 
-    public static DogSprite dogJumping() {
+    public static CharSprite dukeJumping() {
         double[][] body = fromBitmap(
-            "               # ###                  ",  // shaggy ear tufts
-            "              ########                 ",  // ear + head top
-            "             ##########                ",  // head
-            "            ############               ",  // head wider
-            "            ## #########               ",  // eye + face
-            "            #############              ",  // face / nose
-            "           ################            ",  // beard
-            "           ##################          ",  // beard → body
-            "   # ###  #####################        ",  // bushy tail + body
-            "   ######  ######################      ",  // tail + body
-            "    #####  #######################     ",  // body
-            "     ####  ########################    ",  // body
-            "      #### #########################   ",  // body
-            "       ############################    ",  // body widest
-            "       # ##########################    ",  // fur tuft
-            "        ###########################    ",  // body
-            "       ########  ##########  ########  ",  // tucked legs
-            "      ########    ########    ######## ",  // tucked mid
-            "     #########    ########    #########",  // tucked paws
-            "     ## ######    ## #####    ## ######"   // paw toes tucked
+            "                  ######               ",  // head top
+            "                ##########             ",  // head upper
+            "              ##############           ",  // head round
+            "             ################          ",  // head widest
+            "            ##################         ",  // head + eye area
+            "            ####  ############         ",  // eye (gap) + face
+            "            ##################         ",  // face
+            "             #################         ",  // chin
+            "              ################         ",  // neck → body
+            "             ##################        ",  // shoulders
+            "            ####################       ",  // upper body
+            "           ######################      ",  // body widest
+            "           ######################      ",  // body
+            "            ####################       ",  // body taper
+            "            ####################       ",  // body
+            "             ##################        ",  // lower body
+            "            #######  ##########        ",  // tucked legs
+            "           ########  ###########       ",  // tucked mid
+            "          #########  ############      ",  // tucked tight
+            "          ########    ###########      "   // tucked feet
         );
-        double[][] tongue = { {24, 15}, {24, 14} };
-        return new DogSprite(body, tongue);
+        double[][] accent = { {23, 14}, {24, 14}, {24, 13}, {25, 13} };  // red nose
+        return new CharSprite(body, accent);
     }
 
-    public static DogSprite dogBarking() {
+    public static CharSprite dukeThrowing() {
         double[][] body = fromBitmap(
-            "               # ###                  ",  // shaggy ear tufts
-            "              ########                 ",  // ear + head top
-            "             ##########                ",  // head
-            "            ############               ",  // head wider
-            "            ## #########               ",  // eye + face
-            "            ## ########  ##            ",  // eye + mouth open top
-            "            ###          ##            ",  // beard + mouth bottom
-            "            #############              ",  // jaw closes
-            "           ################            ",  // beard
-            "           ##################          ",  // beard → body
-            "   # ###  #####################        ",  // bushy tail + body
-            "   #######  #####################      ",  // tail raised + body
-            "    #####  #######################     ",  // body
-            "     ####  ########################    ",  // body
-            "      #### #########################   ",  // body
-            "       ############################    ",  // body widest
-            "       # ##########################    ",  // fur tuft
-            "        ###########################    ",  // body
-            "         #########################     ",  // body tapering
-            "          ######################       ",  // body narrowing
-            "           #########    ##########     ",  // upper legs
-            "           ########      #########     ",  // knee narrows
-            "          #########      ##########    ",  // legs widen
-            "          #########      ##########    ",  // legs
-            "         ##########      ###########   ",  // paws
-            "         ## #######      ## ########   "   // paw toes
+            "                  ######               ",  // head top
+            "                ##########             ",  // head upper
+            "              ##############           ",  // head round
+            "             ################          ",  // head widest
+            "            ##################         ",  // head + eye area
+            "            ####  ############         ",  // eye + face
+            "            ##################         ",  // face
+            "             #################         ",  // chin
+            "              ################         ",  // neck → body
+            "             ###################       ",  // shoulders wide
+            "            #####################      ",  // upper body
+            "           #######################     ",  // body + arm extend
+            "           ################### ####    ",  // arm reaching out
+            "            ###################  ###   ",  // arm extended
+            "            ####################  ##   ",  // forearm
+            "             ##################        ",  // lower body
+            "              ################         ",  // waist
+            "              ################         ",  // hips
+            "             ######    ########        ",  // upper legs
+            "            ######      ########       ",  // legs
+            "           ######        ########      ",  // legs
+            "          ######          ########     ",  // legs wide
+            "         #######          #########    ",  // feet
+            "         ####              ######      "   // toes
         );
-        double[][] tongue = { {17, 19}, {18, 19}, {19, 19}, {20, 19} };
-        return new DogSprite(body, tongue);
+        double[][] accent = { {23, 17}, {24, 17}, {24, 16}, {25, 16} };  // red nose
+        return new CharSprite(body, accent);
     }
 
-    // Title screen: sitting Bouvier, front-facing (~34w × 24h)
-    public static DogSprite dogSitting() {
+    // Title screen: front-facing Duke (~36w × 24h)
+    public static CharSprite dukeSitting() {
         double[][] body = fromBitmap(
-            "      # #####          # #####         ",  // shaggy ear tufts
-            "      ########        ########         ",  // ears
-            "     ##########      ##########         ",  // ears wider
-            "    ##################################  ",  // head top
-            "    ####  ############  ##########      ",  // eyes
-            "    ##################################  ",  // head
-            "     #############  ############        ",  // nose / snout
-            "     ################################   ",  // beard
-            "      ##############################    ",  // chin
-            "       ############################     ",  // neck
-            "      ##############################    ",  // body
-            "     ################################   ",  // body wider
-            "     ################################   ",  // body
-            "     ################################   ",  // body
-            "      ##############################    ",  // body
-            "       ############################     ",  // body tapering
-            "        ##########################      ",  // lower body
-            "          ##########    ##########      ",  // upper legs
-            "         ###########    ###########     ",  // mid legs
-            "        ############    ############    ",  // legs
-            "        ############    ############    ",  // legs
-            "       #############    #############   ",  // lower legs
-            "       #############    #############   ",  // paws
-            "      ## ###########    ## ###########  "   // paw toes
+            "              ############             ",  // head top
+            "           ##################          ",  // head upper
+            "          ####################         ",  // head round
+            "         ######################        ",  // head widest
+            "        ########################       ",  // head
+            "        ####  ##########  ####         ",  // eyes (two gaps)
+            "        ########################       ",  // face
+            "         ######################        ",  // chin
+            "          ####################         ",  // neck
+            "         ######################        ",  // shoulders
+            "        ########################       ",  // upper body
+            "       ##########################      ",  // body widest
+            "       ##########################      ",  // body
+            "       ##########################      ",  // body
+            "        ########################       ",  // body
+            "         ######################        ",  // body taper
+            "          ####################         ",  // lower body
+            "          ########    ########         ",  // upper legs
+            "         #########    #########        ",  // legs
+            "        ##########    ##########       ",  // legs
+            "        ##########    ##########       ",  // legs
+            "       ###########    ###########      ",  // lower legs
+            "       ###########    ###########      ",  // feet
+            "       #####          #####            "   // toes
         );
-        double[][] tongue = {};
-        return new DogSprite(body, tongue);
+        double[][] accent = { {18, 17}, {19, 17}, {20, 17}, {19, 16}, {20, 16} };  // red nose center
+        return new CharSprite(body, accent);
     }
 
     // ── Obstacles (braille dots, scaled ~1.3x) ─────────────────────

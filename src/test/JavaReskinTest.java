@@ -133,4 +133,25 @@ public class JavaReskinTest {
         var o = new Obstacle.ConferenceStage(100);
         assertFalse(o.throwable(), "conference stage not throwable");
     }
+
+    // --- Task 5: Duke sprite + CharSprite record ---
+
+    public void testCharSpriteRecord() {
+        var duke = Sprites.dukeRunning();
+        assertTrue(duke instanceof Sprites.CharSprite, "should be CharSprite");
+        assertTrue(duke.body().length > 0, "duke running should have body points");
+    }
+
+    public void testDukeSpritesMethods() {
+        var running = Sprites.dukeRunning();
+        var jumping = Sprites.dukeJumping();
+        var throwing = Sprites.dukeThrowing();
+        var sitting = Sprites.dukeSitting();
+
+        assertTrue(running.body().length > 0, "running body");
+        assertTrue(jumping.body().length > 0, "jumping body");
+        assertTrue(throwing.body().length > 0, "throwing body");
+        assertTrue(sitting.body().length > 0, "sitting body");
+        assertTrue(throwing.accent().length > 0, "throwing should have accent (red nose)");
+    }
 }
