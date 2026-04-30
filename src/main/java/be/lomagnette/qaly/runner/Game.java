@@ -12,7 +12,7 @@ public class Game {
     State state = State.TITLE;
     int score;
     float speed;
-    Season season = Season.SPRING;
+    Season era = Season.JAVA_1;
     Player player;
     Ground ground;
     List<Obstacle> obstacles = new ArrayList<>();
@@ -35,7 +35,7 @@ public class Game {
     private void reset() {
         score = 0;
         speed = BASE_SPEED;
-        season = Season.SPRING;
+        era = Season.JAVA_1;
         player = new Player();
         ground = new Ground();
         ground.setMaxX(canvasWidth);
@@ -98,12 +98,12 @@ public class Game {
 
         score++;
         speed = Math.min(BASE_SPEED + (score / 50) * SPEED_INCREMENT, MAX_SPEED);
-        season = Season.forScore(score);
+        era = Season.forScore(score);
 
         Physics.applyGravity(player);
         player.tickCooldown();
 
-        ground.setSeason(season);
+        ground.setSeason(era);
         ground.setMaxX(canvasWidth);
         ground.scroll(speed);
 

@@ -3,10 +3,10 @@ package be.lomagnette.qaly.runner;
 import dev.tamboui.style.Color;
 
 public enum Season {
-    SPRING("Spring", Color.GREEN, Color.rgb(34, 139, 34)),
-    SUMMER("Summer", Color.YELLOW, Color.rgb(200, 170, 50)),
-    AUTUMN("Autumn", Color.rgb(255, 140, 0), Color.rgb(139, 90, 43)),
-    WINTER("Winter", Color.CYAN, Color.rgb(200, 200, 220));
+    JAVA_1("Java 1", Color.GREEN, Color.rgb(34, 139, 34)),
+    JAVA_5("Java 5", Color.YELLOW, Color.rgb(200, 170, 50)),
+    JAVA_11("Java 11", Color.CYAN, Color.rgb(100, 130, 170)),
+    JAVA_21("Java 21+", Color.MAGENTA, Color.rgb(140, 100, 160));
 
     private final String label;
     private final Color accentColor;

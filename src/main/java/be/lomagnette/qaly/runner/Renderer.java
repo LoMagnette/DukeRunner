@@ -148,7 +148,7 @@ public final class Renderer {
         frame.renderWidget(barkWidget, cols.get(0));
 
         var seasonWidget = Paragraph.builder()
-                .text(Text.from(game.season.label()).fg(game.season.accentColor()))
+                .text(Text.from(game.era.label()).fg(game.era.accentColor()))
                 .centered()
                 .build();
         frame.renderWidget(seasonWidget, cols.get(1));
@@ -176,7 +176,7 @@ public final class Renderer {
                     paintObstacles(ctx, game);
                     paintPlayer(ctx, game);
                     paintWoofEffect(ctx, game);
-                    paintParticles(ctx, cw, ch, game);
+                    paintParticles(ctx, cw, ch, game.era, game.score);
                 })
                 .build();
         frame.renderWidget(canvas, gameArea);
@@ -184,7 +184,7 @@ public final class Renderer {
 
     private static void paintGround(dev.tamboui.widgets.canvas.Context ctx, int canvasWidth, Game game) {
         ctx.draw(new dev.tamboui.widgets.canvas.shapes.Line(
-                0, Physics.GROUND_Y, canvasWidth, Physics.GROUND_Y, game.season.groundColor()));
+                0, Physics.GROUND_Y, canvasWidth, Physics.GROUND_Y, game.era.groundColor()));
     }
 
     private static void paintDecorations(dev.tamboui.widgets.canvas.Context ctx, Game game) {
@@ -198,7 +198,7 @@ public final class Renderer {
                 case SNOWFLAKE -> Sprites.snowflake();
             };
             Color color = switch (deco.type()) {
-                case FLOWER -> game.season == Season.SPRING ? Color.MAGENTA : Color.YELLOW;
+                case FLOWER -> game.era == Season.JAVA_1 ? Color.MAGENTA : Color.YELLOW;
                 case STONE -> Color.GRAY;
                 case GRASS_TUFT -> Color.GREEN;
                 case SUN -> Color.YELLOW;
@@ -257,27 +257,27 @@ public final class Renderer {
         }
     }
 
-    private static void paintParticles(dev.tamboui.widgets.canvas.Context ctx, int cw, int ch, Game game) {
+    private static void paintParticles(dev.tamboui.widgets.canvas.Context ctx, int cw, int ch, Season era, int score) {
         int count;
         Color color;
-        if (game.season == Season.WINTER) {
+        if (era == Season.JAVA_21) {
             count = 15;
             color = Color.WHITE;
-        } else if (game.season == Season.AUTUMN) {
+        } else if (era == Season.JAVA_11) {
             count = 8;
             color = Color.rgb(200, 100, 20);
         } else {
             return;
         }
         // Seed based on score to get stable-ish particles that drift slowly
-        var rng = new Random(game.score / 3);
+        var rng = new Random(score / 3);
         var points = new double[count][2];
         for (int i = 0; i < count; i++) {
             double baseX = rng.nextDouble() * cw;
             double baseY = Physics.GROUND_Y + 10 + rng.nextDouble() * (ch - Physics.GROUND_Y - 15);
             // Slow drift: particles shift slightly each tick
-            points[i][0] = (baseX + game.score * 0.3) % cw;
-            points[i][1] = baseY - (game.score % 30) * 0.5;
+            points[i][0] = (baseX + score * 0.3) % cw;
+            points[i][1] = baseY - (score % 30) * 0.5;
             if (points[i][1] < Physics.GROUND_Y + 5) {
                 points[i][1] = ch - 5 - rng.nextDouble() * 10;
             }

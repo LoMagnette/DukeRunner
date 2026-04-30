@@ -12,7 +12,7 @@ public class Ground {
 
     private final List<Decoration> decorations = new ArrayList<>();
     private final Random random = new Random();
-    private Season currentSeason = Season.SPRING;
+    private Season currentSeason = Season.JAVA_1;
     private float maxX = 160;
 
     public Ground() {
@@ -69,10 +69,10 @@ public class Ground {
 
     private DecoType randomDecoType() {
         return switch (currentSeason) {
-            case SPRING -> pick(DecoType.FLOWER, DecoType.GRASS_TUFT, DecoType.STONE);
-            case SUMMER -> pick(DecoType.SUN, DecoType.FLOWER, DecoType.STONE);
-            case AUTUMN -> pick(DecoType.LEAF, DecoType.STONE, DecoType.GRASS_TUFT);
-            case WINTER -> pick(DecoType.SNOWFLAKE, DecoType.STONE, DecoType.GRASS_TUFT);
+            case JAVA_1 -> pick(DecoType.FLOWER, DecoType.GRASS_TUFT, DecoType.STONE);
+            case JAVA_5 -> pick(DecoType.SUN, DecoType.FLOWER, DecoType.STONE);
+            case JAVA_11 -> pick(DecoType.LEAF, DecoType.STONE, DecoType.GRASS_TUFT);
+            case JAVA_21 -> pick(DecoType.SNOWFLAKE, DecoType.STONE, DecoType.GRASS_TUFT);
         };
     }
 

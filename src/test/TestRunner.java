@@ -14,6 +14,7 @@
 //SOURCES ../main/java/be/lomagnette/qaly/runner/Sprites.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/Season.java
 //SOURCES VariableJumpTest.java
+//SOURCES JavaReskinTest.java
 
 package be.lomagnette.qaly.runner;
 
@@ -36,7 +37,8 @@ public class TestRunner {
         }
 
         List<Class<?>> testClasses = List.of(
-                VariableJumpTest.class
+                VariableJumpTest.class,
+                JavaReskinTest.class
         );
 
         for (var clazz : testClasses) {
