@@ -10,30 +10,12 @@ public class Player {
     float verticalVelocity;
     boolean grounded;
     int barkCooldownTicks;
-    boolean jumpHeld;
-    int jumpHoldTicks;
 
     public Player() {
         this.y = Physics.GROUND_Y;
         this.verticalVelocity = 0;
         this.grounded = true;
         this.barkCooldownTicks = 0;
-        this.jumpHeld = false;
-        this.jumpHoldTicks = 0;
-    }
-
-    public void startJumpHold() {
-        jumpHeld = true;
-        jumpHoldTicks = 0;
-    }
-
-    public void tickJumpHold() {
-        if (jumpHeld) jumpHoldTicks++;
-    }
-
-    public void endJumpHold() {
-        jumpHeld = false;
-        jumpHoldTicks = 0;
     }
 
     public boolean canBark() {

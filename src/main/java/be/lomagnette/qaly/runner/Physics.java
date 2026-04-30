@@ -2,12 +2,9 @@ package be.lomagnette.qaly.runner;
 
 public final class Physics {
     static final float GROUND_Y = 8.0f;
-    static final float GRAVITY = 0.18f;
-    static final float JUMP_VELOCITY = 3.5f;
+    static final float GRAVITY = 0.5f;
+    static final float JUMP_VELOCITY = 6.0f;
     static final float BARK_RANGE = 40.0f;
-    static final int MIN_HOLD_TICKS = 5;
-    static final int MAX_HOLD_TICKS = 25;
-    static final int JUMP_KEY_GRACE_TICKS = 12;
 
     private Physics() {}
 
@@ -27,19 +24,6 @@ public final class Physics {
         if (p.grounded) {
             p.verticalVelocity = JUMP_VELOCITY;
             p.grounded = false;
-        }
-    }
-
-    public static void checkJumpCut(Player p, boolean jumpKeyThisTick) {
-        if (!p.jumpHeld) return;
-        if (p.verticalVelocity <= 0) {
-            p.endJumpHold();
-            return;
-        }
-        if (p.jumpHoldTicks < MIN_HOLD_TICKS) return;
-        if (!jumpKeyThisTick || p.jumpHoldTicks >= MAX_HOLD_TICKS) {
-            p.verticalVelocity = 0;
-            p.endJumpHold();
         }
     }
 

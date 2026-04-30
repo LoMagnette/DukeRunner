@@ -19,7 +19,6 @@ public class Game {
     Spawner spawner;
     int woofTimer;
     boolean quit;
-    int jumpKeyGraceTicks;
     int canvasWidth = 160;
     int canvasHeight = 80;
 
@@ -43,7 +42,6 @@ public class Game {
         obstacles.clear();
         spawner = new Spawner();
         woofTimer = 0;
-        jumpKeyGraceTicks = 0;
     }
 
     public boolean handleEvent(KeyEvent k) {
@@ -62,13 +60,7 @@ public class Game {
             }
             case PLAYING -> {
                 if (k.isChar(' ') || k.isUp()) {
-                    if (player.grounded) {
-                        Physics.jump(player);
-                        player.startJumpHold();
-                        jumpKeyGraceTicks = Physics.JUMP_KEY_GRACE_TICKS;
-                    } else if (player.jumpHeld) {
-                        jumpKeyGraceTicks = Physics.JUMP_KEY_GRACE_TICKS;
-                    }
+                    Physics.jump(player);
                     yield true;
                 }
                 if (k.isCharIgnoreCase('b') || k.isDown()) {
@@ -110,9 +102,6 @@ public class Game {
 
         Physics.applyGravity(player);
         player.tickCooldown();
-        player.tickJumpHold();
-        Physics.checkJumpCut(player, jumpKeyGraceTicks > 0);
-        if (jumpKeyGraceTicks > 0) jumpKeyGraceTicks--;
 
         ground.setSeason(season);
         ground.setMaxX(canvasWidth);
