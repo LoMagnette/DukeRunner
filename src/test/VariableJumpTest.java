@@ -1,0 +1,174 @@
+package be.lomagnette.qaly.runner;
+
+import static be.lomagnette.qaly.runner.TestRunner.*;
+
+public class VariableJumpTest {
+
+    // --- Player jump hold state ---
+
+    public void testStartJumpHoldSetsFields() {
+        var p = new Player();
+        p.startJumpHold();
+        assertTrue(p.jumpHeld, "jumpHeld should be true after startJumpHold");
+        assertEquals(0, p.jumpHoldTicks, "jumpHoldTicks should be 0 after startJumpHold");
+    }
+
+    public void testTickJumpHoldIncrementsWhenHeld() {
+        var p = new Player();
+        p.startJumpHold();
+        p.tickJumpHold();
+        assertEquals(1, p.jumpHoldTicks, "jumpHoldTicks should be 1 after one tick");
+        p.tickJumpHold();
+        assertEquals(2, p.jumpHoldTicks, "jumpHoldTicks should be 2 after two ticks");
+    }
+
+    public void testTickJumpHoldNoOpWhenNotHeld() {
+        var p = new Player();
+        p.tickJumpHold();
+        assertEquals(0, p.jumpHoldTicks, "jumpHoldTicks should stay 0 when not held");
+    }
+
+    public void testEndJumpHoldResetsFields() {
+        var p = new Player();
+        p.startJumpHold();
+        p.tickJumpHold();
+        p.tickJumpHold();
+        p.endJumpHold();
+        assertFalse(p.jumpHeld, "jumpHeld should be false after endJumpHold");
+        assertEquals(0, p.jumpHoldTicks, "jumpHoldTicks should be 0 after endJumpHold");
+    }
+
+    // --- Physics.checkJumpCut ---
+
+    public void testCheckJumpCutNoOpWhenNotInHold() {
+        var p = new Player();
+        Physics.jump(p);
+        float velocityBefore = p.verticalVelocity;
+        Physics.checkJumpCut(p, false);
+        assertEquals(velocityBefore, p.verticalVelocity,
+                "velocity should not change when not in jump hold");
+    }
+
+    public void testCheckJumpCutNoOpWhenPastPeak() {
+        var p = new Player();
+        Physics.jump(p);
+        p.startJumpHold();
+        // Simulate past peak: velocity already negative
+        p.verticalVelocity = -1.0f;
+        Physics.checkJumpCut(p, false);
+        assertEquals(-1.0f, p.verticalVelocity,
+                "velocity should not change when already past peak");
+        assertFalse(p.jumpHeld, "jumpHeld should be cleared when past peak");
+    }
+
+    public void testCheckJumpCutZerosVelocityOnRelease() {
+        var p = new Player();
+        Physics.jump(p);
+        p.startJumpHold();
+        p.tickJumpHold(); // 1 tick held
+        // jumpKeyThisTick = false means released
+        Physics.checkJumpCut(p, false);
+        assertEquals(0.0f, p.verticalVelocity,
+                "velocity should be zeroed on key release");
+        assertFalse(p.jumpHeld, "jumpHeld should be cleared on release");
+    }
+
+    public void testCheckJumpCutMaintainsVelocityWhileHolding() {
+        var p = new Player();
+        Physics.jump(p);
+        p.startJumpHold();
+        p.tickJumpHold(); // 1 tick
+        float velocityBefore = p.verticalVelocity;
+        // jumpKeyThisTick = true, under max ticks
+        Physics.checkJumpCut(p, true);
+        assertEquals(velocityBefore, p.verticalVelocity,
+                "velocity should not change while holding under max ticks");
+        assertTrue(p.jumpHeld, "jumpHeld should remain true while holding");
+    }
+
+    public void testCheckJumpCutZerosVelocityAtMaxHold() {
+        var p = new Player();
+        Physics.jump(p);
+        p.startJumpHold();
+        for (int i = 0; i < Physics.MAX_HOLD_TICKS; i++) {
+            p.tickJumpHold();
+        }
+        // Still holding key, but at max ticks
+        Physics.checkJumpCut(p, true);
+        assertEquals(0.0f, p.verticalVelocity,
+                "velocity should be zeroed at max hold ticks");
+        assertFalse(p.jumpHeld, "jumpHeld should be cleared at max hold");
+    }
+
+    // --- Integration: hop height ---
+
+    public void testQuickTapProducesShortHop() {
+        var p = new Player();
+        Physics.jump(p);
+        p.startJumpHold();
+        // Simulate 1 tick of hold then release
+        Physics.applyGravity(p);
+        p.tickJumpHold();
+        Physics.checkJumpCut(p, true); // tick 1: still holding
+        Physics.applyGravity(p);
+        p.tickJumpHold();
+        Physics.checkJumpCut(p, false); // tick 2: released
+        // Velocity should now be 0, player should start falling
+        assertEquals(0.0f, p.verticalVelocity,
+                "velocity should be 0 after quick release");
+        // Let it fall back to ground
+        float peakY = p.y;
+        while (!p.grounded) {
+            Physics.applyGravity(p);
+        }
+        // Peak should be well below full jump peak
+        float maxPeakY = calculateFullJumpPeak();
+        assertTrue(peakY < maxPeakY * 0.5f,
+                "quick tap peak (" + peakY + ") should be well below full jump peak (" + maxPeakY + ")");
+    }
+
+    public void testFullHoldProducesFullJump() {
+        var p = new Player();
+        Physics.jump(p);
+        p.startJumpHold();
+        // Hold for all MAX_HOLD_TICKS
+        for (int i = 0; i < Physics.MAX_HOLD_TICKS; i++) {
+            Physics.applyGravity(p);
+            p.tickJumpHold();
+            Physics.checkJumpCut(p, true);
+        }
+        // On the tick after max, velocity gets zeroed
+        Physics.applyGravity(p);
+        p.tickJumpHold();
+        Physics.checkJumpCut(p, true);
+        float peakY = p.y;
+        // Compare to natural arc peak (no cut at all)
+        float naturalPeak = calculateFullJumpPeak();
+        // Should be close to natural peak (within 20%)
+        assertTrue(peakY > naturalPeak * 0.7f,
+                "full hold peak (" + peakY + ") should be close to natural peak (" + naturalPeak + ")");
+    }
+
+    public void testNoDoubleJump() {
+        var p = new Player();
+        Physics.jump(p);
+        assertFalse(p.grounded, "should not be grounded after jump");
+        // Try to jump again mid-air
+        Physics.jump(p);
+        // Velocity should still be the same (jump only works when grounded)
+        assertEquals(Physics.JUMP_VELOCITY, p.verticalVelocity,
+                "velocity should not change from mid-air jump attempt");
+    }
+
+    private float calculateFullJumpPeak() {
+        // Simulate a full jump with no velocity cut
+        var p = new Player();
+        Physics.jump(p);
+        float maxY = p.y;
+        while (!p.grounded) {
+            Physics.applyGravity(p);
+            if (p.y > maxY) maxY = p.y;
+        }
+        return maxY;
+    }
+}
