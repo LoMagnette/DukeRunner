@@ -56,7 +56,7 @@ public final class Renderer {
                 )
                 .split(area);
 
-        // Bouvier art on Canvas
+        // Duke art on Canvas
         int artWidth = Math.min(area.width(), 40);
         var artCols = Layout.horizontal()
                 .constraints(Constraint.fill(), Constraint.length(artWidth), Constraint.fill())
@@ -75,13 +75,18 @@ public final class Renderer {
                     ctx.draw(Points.of(
                             Sprites.translate(sitting.body(), offsetX, offsetY),
                             Color.WHITE));
+                    if (sitting.accent().length > 0) {
+                        ctx.draw(Points.of(
+                                Sprites.translate(sitting.accent(), offsetX, offsetY),
+                                Color.RED));
+                    }
                 })
                 .build();
         frame.renderWidget(artCanvas, artCols.get(1));
 
         // Title text
         var titleText = Paragraph.builder()
-                .text(Text.from("Q A L Y   R U N N E R")
+                .text(Text.from("D U K E   R U N N E R")
                         .fg(Color.YELLOW))
                 .centered()
                 .build();
@@ -121,7 +126,7 @@ public final class Renderer {
                 .split(overlayRows.get(1));
 
         var gameOverText = Paragraph.builder()
-                .text(Text.from("GAME OVER\n\nScore: " + game.score
+                .text(Text.from("BUILD FAILED\n\nScore: " + game.score
                         + "\n\nSPACE to restart | Q to quit")
                         .fg(Color.RED))
                 .centered()
@@ -198,11 +203,11 @@ public final class Renderer {
                 case CLOUD -> Sprites.cloud();
             };
             Color color = switch (deco.type()) {
-                case COFFEE_CUP -> game.era == Season.JAVA_1 ? Color.MAGENTA : Color.YELLOW;
-                case TERMINAL -> Color.GRAY;
+                case COFFEE_CUP -> Color.rgb(139, 90, 43);
+                case TERMINAL -> Color.GREEN;
                 case GIT_BRANCH -> Color.GREEN;
-                case IDE_ICON -> Color.YELLOW;
-                case DOCKER_WHALE -> Color.rgb(200, 100, 20);
+                case IDE_ICON -> Color.CYAN;
+                case DOCKER_WHALE -> Color.CYAN;
                 case CLOUD -> Color.WHITE;
             };
             ctx.draw(Points.of(
@@ -223,10 +228,10 @@ public final class Renderer {
             };
             Color color = switch (obstacle.type()) {
                 case CONFERENCE_STAGE -> Color.rgb(139, 90, 43);
-                case LAPTOP_STACK_WIDE, LAPTOP_STACK_TALL -> Color.YELLOW;
-                case COFFEE_SPILL -> Color.CYAN;
+                case LAPTOP_STACK_WIDE, LAPTOP_STACK_TALL -> Color.rgb(180, 180, 190);
+                case COFFEE_SPILL -> Color.rgb(139, 90, 43);
                 case CONFUSED_INTERN -> Color.WHITE;
-                case SLOW_BUILD_SERVER -> Color.rgb(200, 150, 50);
+                case SLOW_BUILD_SERVER -> Color.rgb(100, 100, 110);
             };
             ctx.draw(Points.of(
                     Sprites.translate(sprite, obstacle.x(), obstacle.bottomY()),
@@ -262,10 +267,16 @@ public final class Renderer {
         Color color;
         if (era == Season.JAVA_21) {
             count = 15;
-            color = Color.WHITE;
+            color = Color.MAGENTA;
         } else if (era == Season.JAVA_11) {
+            count = 15;
+            color = Color.CYAN;
+        } else if (era == Season.JAVA_1) {
             count = 8;
-            color = Color.rgb(200, 100, 20);
+            color = Color.rgb(139, 90, 43);
+        } else if (era == Season.JAVA_5) {
+            count = 8;
+            color = Color.YELLOW;
         } else {
             return;
         }
