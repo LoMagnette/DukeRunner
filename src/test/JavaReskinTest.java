@@ -154,4 +154,24 @@ public class JavaReskinTest {
         assertTrue(sitting.body().length > 0, "sitting body");
         assertTrue(throwing.accent().length > 0, "throwing should have accent (red nose)");
     }
+
+    // --- Task 6: New obstacle + decoration sprite shapes ---
+
+    public void testObstacleSpriteShapes() {
+        assertTrue(Sprites.conferenceStage().length > 0, "conference stage sprite");
+        assertTrue(Sprites.laptopStackWide().length > 0, "laptop stack wide sprite");
+        assertTrue(Sprites.laptopStackTall().length > 0, "laptop stack tall sprite");
+        assertTrue(Sprites.coffeeSpill().length > 0, "coffee spill sprite");
+        assertTrue(Sprites.confusedIntern().length > 0, "confused intern sprite");
+        assertTrue(Sprites.slowBuildServer().length > 0, "slow build server sprite");
+    }
+
+    public void testDecorationSpriteShapes() {
+        assertTrue(Sprites.coffeeCup().length > 0, "coffee cup sprite");
+        assertTrue(Sprites.terminal().length > 0, "terminal sprite");
+        assertTrue(Sprites.gitBranch().length > 0, "git branch sprite");
+        assertTrue(Sprites.ideIcon().length > 0, "IDE icon sprite");
+        assertTrue(Sprites.dockerWhale().length > 0, "docker whale sprite");
+        assertTrue(Sprites.cloud().length > 0, "cloud sprite");
+    }
 }
