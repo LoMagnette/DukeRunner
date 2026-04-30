@@ -3,7 +3,7 @@ package be.lomagnette.qaly.runner;
 public final class Physics {
     static final float GROUND_Y = 8.0f;
     static final float GRAVITY = 0.5f;
-    static final float JUMP_VELOCITY = 6.0f;
+    static final float JUMP_VELOCITY = 7.0f;
     static final float BARK_RANGE = 40.0f;
 
     private Physics() {}

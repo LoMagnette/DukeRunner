@@ -32,6 +32,23 @@ public class VariableJumpTest {
                 "jump should be snappy, took " + ticks + " ticks (want < 30)");
     }
 
+    public void testJumpClearanceWindowIsPlayable() {
+        // Player.y must be above fence top for enough ticks that
+        // the fence can scroll through with comfortable timing
+        var p = new Player();
+        Physics.jump(p);
+        float fenceTop = Physics.GROUND_Y + 26; // tallest obstacle
+        int clearanceTicks = 0;
+        while (!p.grounded) {
+            Physics.applyGravity(p);
+            if (p.y >= fenceTop) clearanceTicks++;
+        }
+        // Fence width 6, base speed 1.5 → 4 ticks to cross.
+        // Need at least 3x crossing time for playable timing at 60fps.
+        assertTrue(clearanceTicks >= 12,
+                "clearance window (" + clearanceTicks + " ticks) too tight, need >= 12");
+    }
+
     public void testNoDoubleJump() {
         var p = new Player();
         Physics.jump(p);
