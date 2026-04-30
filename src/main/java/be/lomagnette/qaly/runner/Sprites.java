@@ -14,126 +14,149 @@ public final class Sprites {
 
     // ── Duke sprites (braille bitmaps, ~36w × 24h) ──────────────
     // '#' = lit dot. First row = top (highest y). Facing right.
-    // Duke = Java mascot: round white body, triangular red nose
+    // Duke = Java mascot: inverted teardrop blob, big red nose,
+    //   no eyes/mouth, thin noodle arms, small nub feet.
 
     public static CharSprite dukeRunning() {
         double[][] body = fromBitmap(
-            "                  ######               ",  // head top
-            "                ##########             ",  // head upper
-            "              ##############           ",  // head round
-            "             ################          ",  // head widest
-            "            ##################         ",  // head + eye area
-            "            ####  ############         ",  // eye (gap) + face
-            "            ##################         ",  // face
-            "             #################         ",  // chin / jawline
-            "              ################         ",  // neck → body
-            "             ##################        ",  // shoulders
-            "            ####################       ",  // upper body
-            "           ######################      ",  // body widest
-            "           ######################      ",  // body
-            "            ####################       ",  // body taper
-            "            ####################       ",  // body
-            "             ##################        ",  // lower body
-            "              ################         ",  // waist
-            "              ################         ",  // hips
-            "             ######    ########        ",  // upper legs
-            "            ######      ########       ",  // legs stride
-            "           ######        ########      ",  // legs extended
-            "          ######          ########     ",  // legs wide (running)
-            "         #######          #########    ",  // feet
-            "         ####              ######      "   // toes
+            "            ##                        ",  // crown tip
+            "           ####                       ",  // crown
+            "          ######                      ",  // upper head
+            "         ########                     ",  // head
+            "        ##########                    ",  // head wider
+            "       ############                   ",  // face
+            "      ##############                  ",  // face wider
+            "     ################                 ",  // upper body
+            "     ####################             ",  // nose bulge right
+            "    ######################            ",  // nose peak
+            "     ####################             ",  // nose bulge
+            "     #################                ",  // below nose
+            "    ####################              ",  // body
+            "    #####################             ",  // body widest
+            "    #####################             ",  // body
+            "     ###################              ",  // body taper
+            "      #################               ",  // lower body
+            "       ###############                ",  // lower body
+            "        #############                 ",  // narrowing
+            "         ###########                  ",  // narrow
+            "          #########                   ",  // above feet
+            "          #### ####                   ",  // feet split
+            "         ####   ####                  ",  // feet
+            "         ###     ###                  "   // feet bottoms
         );
-        double[][] accent = { {23, 17}, {24, 17}, {24, 16}, {25, 16} };  // red triangular nose
+        // Nose: rounded bump on right side of face (rows 8-10)
+        double[][] accent = {
+            {21, 15}, {22, 15}, {23, 15}, {24, 15},
+            {22, 14}, {23, 14}, {24, 14}, {25, 14},
+            {21, 13}, {22, 13}, {23, 13}, {24, 13}
+        };
         return new CharSprite(body, accent);
     }
 
     public static CharSprite dukeJumping() {
         double[][] body = fromBitmap(
-            "                  ######               ",  // head top
-            "                ##########             ",  // head upper
-            "              ##############           ",  // head round
-            "             ################          ",  // head widest
-            "            ##################         ",  // head + eye area
-            "            ####  ############         ",  // eye (gap) + face
-            "            ##################         ",  // face
-            "             #################         ",  // chin
-            "              ################         ",  // neck → body
-            "             ##################        ",  // shoulders
-            "            ####################       ",  // upper body
-            "           ######################      ",  // body widest
-            "           ######################      ",  // body
-            "            ####################       ",  // body taper
-            "            ####################       ",  // body
-            "             ##################        ",  // lower body
-            "            #######  ##########        ",  // tucked legs
-            "           ########  ###########       ",  // tucked mid
-            "          #########  ############      ",  // tucked tight
-            "          ########    ###########      "   // tucked feet
+            "            ##                        ",  // crown tip
+            "           ####                       ",  // crown
+            "          ######                      ",  // upper head
+            "         ########                     ",  // head
+            "        ##########                    ",  // head wider
+            "       ############                   ",  // face
+            "      ##############                  ",  // face wider
+            "     ################                 ",  // upper body
+            "     ####################             ",  // nose bulge
+            "    ######################            ",  // nose peak
+            "     ####################             ",  // nose bulge
+            "     #################                ",  // below nose
+            "    ####################              ",  // body
+            "    #####################             ",  // body widest
+            "    #####################             ",  // body
+            "     ###################              ",  // body taper
+            "      #################               ",  // lower body
+            "       ###############                ",  // lower body
+            "       ######  #######                ",  // tucked feet
+            "      #######  ########               "   // tucked nubs
         );
-        double[][] accent = { {23, 14}, {24, 14}, {24, 13}, {25, 13} };  // red nose
+        // Nose accent (20 rows → row 8 = y11)
+        double[][] accent = {
+            {21, 11}, {22, 11}, {23, 11}, {24, 11},
+            {22, 10}, {23, 10}, {24, 10}, {25, 10},
+            {21, 9}, {22, 9}, {23, 9}, {24, 9}
+        };
         return new CharSprite(body, accent);
     }
 
     public static CharSprite dukeThrowing() {
         double[][] body = fromBitmap(
-            "                  ######               ",  // head top
-            "                ##########             ",  // head upper
-            "              ##############           ",  // head round
-            "             ################          ",  // head widest
-            "            ##################         ",  // head + eye area
-            "            ####  ############         ",  // eye + face
-            "            ##################         ",  // face
-            "             #################         ",  // chin
-            "              ################         ",  // neck → body
-            "             ###################       ",  // shoulders wide
-            "            #####################      ",  // upper body
-            "           #######################     ",  // body + arm extend
-            "           ################### ####    ",  // arm reaching out
-            "            ###################  ###   ",  // arm extended
-            "            ####################  ##   ",  // forearm
-            "             ##################        ",  // lower body
-            "              ################         ",  // waist
-            "              ################         ",  // hips
-            "             ######    ########        ",  // upper legs
-            "            ######      ########       ",  // legs
-            "           ######        ########      ",  // legs
-            "          ######          ########     ",  // legs wide
-            "         #######          #########    ",  // feet
-            "         ####              ######      "   // toes
+            "            ##                        ",  // crown tip
+            "           ####                       ",  // crown
+            "          ######                      ",  // upper head
+            "         ########                     ",  // head
+            "        ##########                    ",  // head wider
+            "       ############                   ",  // face
+            "      ##############                  ",  // face wider
+            "     ################                 ",  // upper body
+            "     ####################             ",  // nose bulge
+            "    ######################            ",  // nose peak
+            "     ####################             ",  // nose bulge
+            "     #################                ",  // below nose
+            "    ###################### ##         ",  // body + arm start
+            "    #######################  ###      ",  // body + arm extending
+            "    #####################    ###      ",  // body + hand
+            "     ###################              ",  // body taper
+            "      #################               ",  // lower body
+            "       ###############                ",  // lower body
+            "        #############                 ",  // narrowing
+            "         ###########                  ",  // narrow
+            "          #########                   ",  // above feet
+            "          #### ####                   ",  // feet split
+            "         ####   ####                  ",  // feet
+            "         ###     ###                  "   // feet bottoms
         );
-        double[][] accent = { {23, 17}, {24, 17}, {24, 16}, {25, 16} };  // red nose
+        // Same nose position as running (24 rows)
+        double[][] accent = {
+            {21, 15}, {22, 15}, {23, 15}, {24, 15},
+            {22, 14}, {23, 14}, {24, 14}, {25, 14},
+            {21, 13}, {22, 13}, {23, 13}, {24, 13}
+        };
         return new CharSprite(body, accent);
     }
 
     // Title screen: front-facing Duke (~36w × 24h)
     public static CharSprite dukeSitting() {
         double[][] body = fromBitmap(
-            "              ############             ",  // head top
-            "           ##################          ",  // head upper
-            "          ####################         ",  // head round
-            "         ######################        ",  // head widest
-            "        ########################       ",  // head
-            "        ####  ##########  ####         ",  // eyes (two gaps)
-            "        ########################       ",  // face
-            "         ######################        ",  // chin
-            "          ####################         ",  // neck
-            "         ######################        ",  // shoulders
-            "        ########################       ",  // upper body
-            "       ##########################      ",  // body widest
-            "       ##########################      ",  // body
-            "       ##########################      ",  // body
-            "        ########################       ",  // body
-            "         ######################        ",  // body taper
-            "          ####################         ",  // lower body
-            "          ########    ########         ",  // upper legs
-            "         #########    #########        ",  // legs
-            "        ##########    ##########       ",  // legs
-            "        ##########    ##########       ",  // legs
-            "       ###########    ###########      ",  // lower legs
-            "       ###########    ###########      ",  // feet
-            "       #####          #####            "   // toes
+            "              ##                      ",  // crown tip
+            "             ####                     ",  // crown
+            "            ######                    ",  // upper head
+            "           ########                   ",  // head
+            "          ##########                  ",  // head wider
+            "         ############                 ",  // face
+            "        ##############                ",  // face wider
+            "       ################               ",  // upper body
+            "      ##################              ",  // body + nose area
+            "      ##################              ",  // nose center
+            "      ##################              ",  // body + nose area
+            "     ####################             ",  // body wider
+            "     ####################             ",  // body widest
+            "     ####################             ",  // body
+            "     ####################             ",  // body
+            "      ##################              ",  // body taper
+            "       ################               ",  // lower body
+            "        ##############                ",  // lower body
+            "         ############                 ",  // narrowing
+            "          ##########                  ",  // narrow
+            "          ##########                  ",  // above feet
+            "          ####  ####                  ",  // feet split
+            "         #####  #####                 ",  // feet
+            "         ####    ####                 "   // feet bottoms
         );
-        double[][] accent = { {18, 17}, {19, 17}, {20, 17}, {19, 16}, {20, 16} };  // red nose center
+        // Nose: centered oval on face (front view)
+        double[][] accent = {
+            {13, 16}, {14, 16}, {15, 16},
+            {12, 15}, {13, 15}, {14, 15}, {15, 15}, {16, 15},
+            {11, 14}, {12, 14}, {13, 14}, {14, 14}, {15, 14}, {16, 14}, {17, 14},
+            {12, 13}, {13, 13}, {14, 13}, {15, 13}, {16, 13},
+            {13, 12}, {14, 12}, {15, 12}
+        };
         return new CharSprite(body, accent);
     }
 
