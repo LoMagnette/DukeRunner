@@ -65,12 +65,26 @@ public class VariableJumpTest {
         var p = new Player();
         Physics.jump(p);
         p.startJumpHold();
-        p.tickJumpHold(); // 1 tick held
-        // jumpKeyThisTick = false means released
+        for (int i = 0; i < Physics.MIN_HOLD_TICKS; i++) {
+            p.tickJumpHold();
+        }
+        // jumpKeyThisTick = false means released, past min hold
         Physics.checkJumpCut(p, false);
         assertEquals(0.0f, p.verticalVelocity,
-                "velocity should be zeroed on key release");
+                "velocity should be zeroed on key release after min hold");
         assertFalse(p.jumpHeld, "jumpHeld should be cleared on release");
+    }
+
+    public void testCheckJumpCutNoOpBeforeMinHold() {
+        var p = new Player();
+        Physics.jump(p);
+        p.startJumpHold();
+        p.tickJumpHold(); // 1 tick — below min
+        float velocityBefore = p.verticalVelocity;
+        Physics.checkJumpCut(p, false); // released, but under min hold
+        assertEquals(velocityBefore, p.verticalVelocity,
+                "velocity should not change before min hold ticks");
+        assertTrue(p.jumpHeld, "jumpHeld should remain true before min hold");
     }
 
     public void testCheckJumpCutMaintainsVelocityWhileHolding() {
@@ -106,25 +120,32 @@ public class VariableJumpTest {
         var p = new Player();
         Physics.jump(p);
         p.startJumpHold();
-        // Simulate 1 tick of hold then release
+        // Simulate 2 ticks of hold then release — velocity cut delayed until MIN_HOLD_TICKS
         Physics.applyGravity(p);
         p.tickJumpHold();
-        Physics.checkJumpCut(p, true); // tick 1: still holding
+        Physics.checkJumpCut(p, true); // tick 1: holding
         Physics.applyGravity(p);
         p.tickJumpHold();
-        Physics.checkJumpCut(p, false); // tick 2: released
-        // Velocity should now be 0, player should start falling
+        Physics.checkJumpCut(p, false); // tick 2: released, but under min hold
+        assertTrue(p.jumpHeld, "jumpHeld should still be true before min hold");
+        // Continue ticking until min hold is reached and velocity is cut
+        while (p.jumpHeld && p.verticalVelocity > 0) {
+            Physics.applyGravity(p);
+            p.tickJumpHold();
+            Physics.checkJumpCut(p, false);
+        }
         assertEquals(0.0f, p.verticalVelocity,
-                "velocity should be 0 after quick release");
-        // Let it fall back to ground
+                "velocity should be 0 after min hold reached");
         float peakY = p.y;
         while (!p.grounded) {
             Physics.applyGravity(p);
         }
-        // Peak should be well below full jump peak
+        // Peak should be below full jump peak but above trivial height
         float maxPeakY = calculateFullJumpPeak();
-        assertTrue(peakY < maxPeakY * 0.5f,
-                "quick tap peak (" + peakY + ") should be well below full jump peak (" + maxPeakY + ")");
+        assertTrue(peakY < maxPeakY * 0.6f,
+                "quick tap peak (" + peakY + ") should be below full jump peak (" + maxPeakY + ")");
+        assertTrue(peakY > Physics.GROUND_Y + 10,
+                "quick tap peak (" + peakY + ") should clear low obstacles");
     }
 
     public void testFullHoldProducesFullJump() {

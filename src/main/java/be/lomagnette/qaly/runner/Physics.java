@@ -5,6 +5,7 @@ public final class Physics {
     static final float GRAVITY = 0.18f;
     static final float JUMP_VELOCITY = 3.5f;
     static final float BARK_RANGE = 40.0f;
+    static final int MIN_HOLD_TICKS = 5;
     static final int MAX_HOLD_TICKS = 15;
 
     private Physics() {}
@@ -34,6 +35,7 @@ public final class Physics {
             p.endJumpHold();
             return;
         }
+        if (p.jumpHoldTicks < MIN_HOLD_TICKS) return;
         if (!jumpKeyThisTick || p.jumpHoldTicks >= MAX_HOLD_TICKS) {
             p.verticalVelocity = 0;
             p.endJumpHold();
