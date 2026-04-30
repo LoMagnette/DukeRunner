@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Ground {
 
-    public enum DecoType { FLOWER, STONE, GRASS_TUFT, SUN, LEAF, SNOWFLAKE }
+    public enum DecoType { COFFEE_CUP, TERMINAL, GIT_BRANCH, IDE_ICON, DOCKER_WHALE, CLOUD }
 
     public record Decoration(DecoType type, float x) {}
 
@@ -69,10 +69,10 @@ public class Ground {
 
     private DecoType randomDecoType() {
         return switch (currentSeason) {
-            case JAVA_1 -> pick(DecoType.FLOWER, DecoType.GRASS_TUFT, DecoType.STONE);
-            case JAVA_5 -> pick(DecoType.SUN, DecoType.FLOWER, DecoType.STONE);
-            case JAVA_11 -> pick(DecoType.LEAF, DecoType.STONE, DecoType.GRASS_TUFT);
-            case JAVA_21 -> pick(DecoType.SNOWFLAKE, DecoType.STONE, DecoType.GRASS_TUFT);
+            case JAVA_1 -> pick(DecoType.COFFEE_CUP, DecoType.GIT_BRANCH, DecoType.TERMINAL);
+            case JAVA_5 -> pick(DecoType.IDE_ICON, DecoType.COFFEE_CUP, DecoType.DOCKER_WHALE);
+            case JAVA_11 -> pick(DecoType.TERMINAL, DecoType.CLOUD, DecoType.COFFEE_CUP);
+            case JAVA_21 -> pick(DecoType.COFFEE_CUP, DecoType.CLOUD, DecoType.IDE_ICON);
         };
     }
 

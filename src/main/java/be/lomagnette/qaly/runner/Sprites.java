@@ -218,7 +218,7 @@ public final class Sprites {
 
     // ── Decorations (braille dots, scaled ~1.5x) ─────────────────
 
-    public static double[][] flower() {
+    public static double[][] coffeeCup() {
         var pts = new ArrayList<double[]>();
         // Stem
         dot(pts, 2, 0); dot(pts, 2, 1); dot(pts, 2, 2); dot(pts, 2, 3);
@@ -230,7 +230,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] stone() {
+    public static double[][] terminal() {
         var pts = new ArrayList<double[]>();
         dot(pts, 1, 0); dot(pts, 2, 0); dot(pts, 3, 0);
         dot(pts, 0, 1); dot(pts, 1, 1); dot(pts, 2, 1); dot(pts, 3, 1); dot(pts, 4, 1);
@@ -239,7 +239,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] grassTuft() {
+    public static double[][] gitBranch() {
         var pts = new ArrayList<double[]>();
         dot(pts, 0, 0); dot(pts, 2, 0); dot(pts, 4, 0);
         dot(pts, 1, 1); dot(pts, 3, 1);
@@ -248,7 +248,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] sun() {
+    public static double[][] ideIcon() {
         var pts = new ArrayList<double[]>();
         dot(pts, 2, 0);
         dot(pts, 0, 1); dot(pts, 2, 1); dot(pts, 4, 1);
@@ -258,7 +258,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] leaf() {
+    public static double[][] dockerWhale() {
         var pts = new ArrayList<double[]>();
         dot(pts, 0, 0); dot(pts, 1, 0);
         dot(pts, 1, 1); dot(pts, 2, 1); dot(pts, 3, 1);
@@ -267,7 +267,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] snowflake() {
+    public static double[][] cloud() {
         var pts = new ArrayList<double[]>();
         dot(pts, 2, 0);
         dot(pts, 0, 1); dot(pts, 2, 1); dot(pts, 4, 1);

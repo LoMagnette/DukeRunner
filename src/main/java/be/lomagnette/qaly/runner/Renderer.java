@@ -190,20 +190,20 @@ public final class Renderer {
     private static void paintDecorations(dev.tamboui.widgets.canvas.Context ctx, Game game) {
         for (var deco : game.ground.decorations()) {
             double[][] sprite = switch (deco.type()) {
-                case FLOWER -> Sprites.flower();
-                case STONE -> Sprites.stone();
-                case GRASS_TUFT -> Sprites.grassTuft();
-                case SUN -> Sprites.sun();
-                case LEAF -> Sprites.leaf();
-                case SNOWFLAKE -> Sprites.snowflake();
+                case COFFEE_CUP -> Sprites.coffeeCup();
+                case TERMINAL -> Sprites.terminal();
+                case GIT_BRANCH -> Sprites.gitBranch();
+                case IDE_ICON -> Sprites.ideIcon();
+                case DOCKER_WHALE -> Sprites.dockerWhale();
+                case CLOUD -> Sprites.cloud();
             };
             Color color = switch (deco.type()) {
-                case FLOWER -> game.era == Season.JAVA_1 ? Color.MAGENTA : Color.YELLOW;
-                case STONE -> Color.GRAY;
-                case GRASS_TUFT -> Color.GREEN;
-                case SUN -> Color.YELLOW;
-                case LEAF -> Color.rgb(200, 100, 20);
-                case SNOWFLAKE -> Color.WHITE;
+                case COFFEE_CUP -> game.era == Season.JAVA_1 ? Color.MAGENTA : Color.YELLOW;
+                case TERMINAL -> Color.GRAY;
+                case GIT_BRANCH -> Color.GREEN;
+                case IDE_ICON -> Color.YELLOW;
+                case DOCKER_WHALE -> Color.rgb(200, 100, 20);
+                case CLOUD -> Color.WHITE;
             };
             ctx.draw(Points.of(
                     Sprites.translate(sprite, deco.x(), Physics.GROUND_Y + 1),

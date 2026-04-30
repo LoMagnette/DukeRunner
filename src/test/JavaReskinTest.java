@@ -42,4 +42,18 @@ public class JavaReskinTest {
         assertEquals(Season.JAVA_21, Season.forScore(300), "score 300 → JAVA_21");
         assertEquals(Season.JAVA_1, Season.forScore(400), "score 400 → cycles back to JAVA_1");
     }
+
+    // --- Task 2: Decoration type renames ---
+
+    public void testDecoTypeEnumValues() {
+        // Verify all new DecoType values exist
+        var types = Ground.DecoType.values();
+        assertEquals(6, types.length, "should have 6 deco types");
+        assertEquals(Ground.DecoType.COFFEE_CUP, types[0], "first deco type");
+        assertEquals(Ground.DecoType.TERMINAL, types[1], "second deco type");
+        assertEquals(Ground.DecoType.GIT_BRANCH, types[2], "third deco type");
+        assertEquals(Ground.DecoType.IDE_ICON, types[3], "fourth deco type");
+        assertEquals(Ground.DecoType.DOCKER_WHALE, types[4], "fifth deco type");
+        assertEquals(Ground.DecoType.CLOUD, types[5], "sixth deco type");
+    }
 }
