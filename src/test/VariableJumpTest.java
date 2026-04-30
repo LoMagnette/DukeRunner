@@ -249,26 +249,26 @@ public class VariableJumpTest {
                 + tapPeak + ")");
     }
 
-    // --- Obstacle rebalancing ---
+    // --- Obstacle dimensions ---
 
-    public void testWideHayBaleHeightIs6() {
+    public void testWideHayBaleHeight() {
         var bale = new Obstacle.HayBale(100, true);
-        assertEquals(6.0f, bale.height(), "wide hay bale height should be 6");
+        assertEquals(9.0f, bale.height(), "wide hay bale height should be 9");
     }
 
-    public void testTallHayBaleHeightUnchanged() {
+    public void testTallHayBaleHeight() {
         var bale = new Obstacle.HayBale(100, false);
-        assertEquals(18.0f, bale.height(), "tall hay bale height should remain 18");
+        assertEquals(25.0f, bale.height(), "tall hay bale height should be 25");
     }
 
-    public void testFenceHeightUnchanged() {
+    public void testFenceHeight() {
         var fence = new Obstacle.Fence(100);
-        assertEquals(20.0f, fence.height(), "fence height should remain 20");
+        assertEquals(26.0f, fence.height(), "fence height should be 26");
     }
 
-    public void testPuddleHeightUnchanged() {
+    public void testPuddleHeight() {
         var puddle = new Obstacle.Puddle(100);
-        assertEquals(3.0f, puddle.height(), "puddle height should remain 3");
+        assertEquals(6.0f, puddle.height(), "puddle height should be 6");
     }
 
     private float calculateFullJumpPeak() {

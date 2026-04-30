@@ -23,8 +23,8 @@ public sealed abstract class Obstacle
     public static final class Fence extends Obstacle {
         public Fence(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y; }
-        public float width() { return 4; }
-        public float height() { return 20; }
+        public float width() { return 6; }
+        public float height() { return 26; }
         public boolean barkable() { return false; }
         public ObstacleType type() { return ObstacleType.FENCE; }
     }
@@ -34,8 +34,8 @@ public sealed abstract class Obstacle
         public HayBale(float x, boolean wide) { super(x); this.wide = wide; }
         public boolean isWide() { return wide; }
         public float bottomY() { return Physics.GROUND_Y; }
-        public float width() { return wide ? 14 : 6; }
-        public float height() { return wide ? 6 : 18; }
+        public float width() { return wide ? 18 : 8; }
+        public float height() { return wide ? 9 : 25; }
         public boolean barkable() { return false; }
         public ObstacleType type() { return wide ? ObstacleType.HAY_BALE_WIDE : ObstacleType.HAY_BALE_TALL; }
     }
@@ -43,8 +43,8 @@ public sealed abstract class Obstacle
     public static final class Puddle extends Obstacle {
         public Puddle(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y - 1; }
-        public float width() { return 16; }
-        public float height() { return 3; }
+        public float width() { return 22; }
+        public float height() { return 6; }
         public boolean barkable() { return false; }
         public ObstacleType type() { return ObstacleType.PUDDLE; }
     }
@@ -52,8 +52,8 @@ public sealed abstract class Obstacle
     public static final class Sheep extends Obstacle {
         public Sheep(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y; }
-        public float width() { return 10; }
-        public float height() { return 10; }
+        public float width() { return 14; }
+        public float height() { return 14; }
         public boolean barkable() { return true; }
         public ObstacleType type() { return ObstacleType.SHEEP; }
     }
@@ -61,8 +61,8 @@ public sealed abstract class Obstacle
     public static final class Chicken extends Obstacle {
         public Chicken(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y; }
-        public float width() { return 5; }
-        public float height() { return 7; }
+        public float width() { return 7; }
+        public float height() { return 10; }
         public boolean barkable() { return true; }
         public ObstacleType type() { return ObstacleType.CHICKEN; }
     }

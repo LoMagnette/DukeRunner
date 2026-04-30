@@ -139,22 +139,23 @@ public final class Sprites {
         return new DogSprite(body, tongue);
     }
 
-    // ── Obstacles (braille dots) ──────────────────────────────────
+    // ── Obstacles (braille dots, scaled ~1.3x) ─────────────────────
 
     public static double[][] fence() {
         var pts = new ArrayList<double[]>();
-        fillRect(pts, 0, 0, 1, 19);
-        fillRect(pts, 3, 0, 4, 19);
-        fillRect(pts, 0, 17, 4, 18);
-        fillRect(pts, 0, 10, 4, 11);
+        fillRect(pts, 0, 0, 1, 25);    // left post
+        fillRect(pts, 4, 0, 5, 25);    // right post
+        fillRect(pts, 0, 22, 5, 24);   // upper rail
+        fillRect(pts, 0, 12, 5, 14);   // lower rail
         return toArray(pts);
     }
 
     public static double[][] hayBaleWide() {
         var pts = new ArrayList<double[]>();
-        fillRect(pts, 1, 0, 12, 9);
-        fillRect(pts, 0, 1, 13, 8);
-        for (int x = 2; x <= 11; x += 3) {
+        fillRect(pts, 2, 0, 15, 8);    // core
+        fillRect(pts, 1, 1, 16, 7);    // wider middle
+        fillRect(pts, 0, 2, 17, 6);    // widest
+        for (int x = 3; x <= 14; x += 4) {
             dot(pts, x, 4); dot(pts, x, 5);
         }
         return toArray(pts);
@@ -162,84 +163,117 @@ public final class Sprites {
 
     public static double[][] hayBaleTall() {
         var pts = new ArrayList<double[]>();
-        fillRect(pts, 1, 0, 4, 17);
-        fillRect(pts, 0, 1, 5, 16);
+        fillRect(pts, 2, 0, 5, 24);    // core
+        fillRect(pts, 1, 1, 6, 23);    // wider middle
+        fillRect(pts, 0, 2, 7, 22);    // widest
         return toArray(pts);
     }
 
     public static double[][] puddle() {
         var pts = new ArrayList<double[]>();
-        fillRect(pts, 1, 0, 14, 1);
-        fillRect(pts, 0, 1, 15, 2);
-        for (int x = 2; x <= 13; x += 2) {
-            dot(pts, x, 2);
+        fillRect(pts, 2, 0, 19, 2);    // base
+        fillRect(pts, 1, 1, 20, 3);    // middle
+        fillRect(pts, 0, 2, 21, 4);    // widest
+        for (int x = 3; x <= 18; x += 3) {
+            dot(pts, x, 5);            // ripple tops
         }
         return toArray(pts);
     }
 
     public static double[][] sheep() {
         var pts = new ArrayList<double[]>();
-        fillRect(pts, 1, 4, 8, 9);
-        fillRect(pts, 0, 5, 9, 8);
-        dot(pts, 0, 9); dot(pts, 9, 9);
-        fillRect(pts, 9, 5, 11, 8);
-        dot(pts, 11, 7);
-        fillRect(pts, 2, 0, 3, 4);
-        fillRect(pts, 6, 0, 7, 4);
+        // Fluffy body (oval)
+        fillRect(pts, 2, 5, 10, 12);
+        fillRect(pts, 1, 6, 11, 11);
+        fillRect(pts, 0, 7, 12, 10);
+        // Fluffy tufts
+        dot(pts, 0, 12); dot(pts, 12, 12);
+        dot(pts, 0, 5); dot(pts, 12, 5);
+        // Head
+        fillRect(pts, 12, 7, 14, 11);
+        dot(pts, 14, 10);              // ear
+        // Legs
+        fillRect(pts, 3, 0, 4, 5);
+        fillRect(pts, 8, 0, 9, 5);
         return toArray(pts);
     }
 
     public static double[][] chicken() {
         var pts = new ArrayList<double[]>();
-        fillRect(pts, 1, 2, 3, 5);
-        fillRect(pts, 3, 4, 5, 6);
-        dot(pts, 5, 5);
-        dot(pts, 0, 5); dot(pts, 0, 4);
-        fillRect(pts, 1, 0, 1, 2);
-        fillRect(pts, 3, 0, 3, 2);
-        dot(pts, 4, 6);
+        // Body
+        fillRect(pts, 1, 3, 4, 7);
+        fillRect(pts, 4, 5, 6, 8);
+        // Tail
+        dot(pts, 0, 6); dot(pts, 0, 7);
+        // Head + comb
+        dot(pts, 6, 8); dot(pts, 6, 9);
+        dot(pts, 5, 9);
+        // Beak
+        dot(pts, 7, 8);
+        // Legs
+        fillRect(pts, 2, 0, 2, 3);
+        fillRect(pts, 4, 0, 4, 3);
         return toArray(pts);
     }
 
-    // ── Decorations (braille dots) ────────────────────────────────
+    // ── Decorations (braille dots, scaled ~1.5x) ─────────────────
 
     public static double[][] flower() {
         var pts = new ArrayList<double[]>();
-        dot(pts, 1, 0); dot(pts, 1, 1); dot(pts, 1, 2);
-        dot(pts, 0, 3); dot(pts, 1, 3); dot(pts, 2, 3); dot(pts, 1, 4);
+        // Stem
+        dot(pts, 2, 0); dot(pts, 2, 1); dot(pts, 2, 2); dot(pts, 2, 3);
+        // Petals
+        dot(pts, 1, 4); dot(pts, 2, 4); dot(pts, 3, 4);
+        dot(pts, 0, 5); dot(pts, 1, 5); dot(pts, 2, 5); dot(pts, 3, 5); dot(pts, 4, 5);
+        dot(pts, 1, 6); dot(pts, 2, 6); dot(pts, 3, 6);
+        dot(pts, 2, 7);
         return toArray(pts);
     }
 
     public static double[][] stone() {
         var pts = new ArrayList<double[]>();
-        dot(pts, 0, 0); dot(pts, 1, 0); dot(pts, 2, 0);
-        dot(pts, 0, 1); dot(pts, 1, 1);
+        dot(pts, 1, 0); dot(pts, 2, 0); dot(pts, 3, 0);
+        dot(pts, 0, 1); dot(pts, 1, 1); dot(pts, 2, 1); dot(pts, 3, 1); dot(pts, 4, 1);
+        dot(pts, 0, 2); dot(pts, 1, 2); dot(pts, 2, 2); dot(pts, 3, 2);
+        dot(pts, 1, 3); dot(pts, 2, 3);
         return toArray(pts);
     }
 
     public static double[][] grassTuft() {
         var pts = new ArrayList<double[]>();
-        dot(pts, 0, 0); dot(pts, 1, 1); dot(pts, 2, 0); dot(pts, 1, 2);
+        dot(pts, 0, 0); dot(pts, 2, 0); dot(pts, 4, 0);
+        dot(pts, 1, 1); dot(pts, 3, 1);
+        dot(pts, 1, 2); dot(pts, 2, 3); dot(pts, 3, 2);
+        dot(pts, 2, 4);
         return toArray(pts);
     }
 
     public static double[][] sun() {
         var pts = new ArrayList<double[]>();
-        dot(pts, 1, 0); dot(pts, 0, 1); dot(pts, 1, 1);
-        dot(pts, 2, 1); dot(pts, 1, 2);
+        dot(pts, 2, 0);
+        dot(pts, 0, 1); dot(pts, 2, 1); dot(pts, 4, 1);
+        dot(pts, 1, 2); dot(pts, 2, 2); dot(pts, 3, 2);
+        dot(pts, 0, 3); dot(pts, 2, 3); dot(pts, 4, 3);
+        dot(pts, 2, 4);
         return toArray(pts);
     }
 
     public static double[][] leaf() {
         var pts = new ArrayList<double[]>();
-        dot(pts, 0, 0); dot(pts, 1, 0); dot(pts, 1, 1); dot(pts, 2, 1);
+        dot(pts, 0, 0); dot(pts, 1, 0);
+        dot(pts, 1, 1); dot(pts, 2, 1); dot(pts, 3, 1);
+        dot(pts, 2, 2); dot(pts, 3, 2); dot(pts, 4, 2);
+        dot(pts, 3, 3); dot(pts, 4, 3);
         return toArray(pts);
     }
 
     public static double[][] snowflake() {
         var pts = new ArrayList<double[]>();
-        dot(pts, 1, 0); dot(pts, 0, 1); dot(pts, 1, 1);
-        dot(pts, 2, 1); dot(pts, 1, 2);
+        dot(pts, 2, 0);
+        dot(pts, 0, 1); dot(pts, 2, 1); dot(pts, 4, 1);
+        dot(pts, 1, 2); dot(pts, 2, 2); dot(pts, 3, 2);
+        dot(pts, 0, 3); dot(pts, 2, 3); dot(pts, 4, 3);
+        dot(pts, 2, 4);
         return toArray(pts);
     }
 
