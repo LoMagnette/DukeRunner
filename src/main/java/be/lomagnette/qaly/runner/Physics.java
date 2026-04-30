@@ -6,7 +6,8 @@ public final class Physics {
     static final float JUMP_VELOCITY = 3.5f;
     static final float BARK_RANGE = 40.0f;
     static final int MIN_HOLD_TICKS = 5;
-    static final int MAX_HOLD_TICKS = 15;
+    static final int MAX_HOLD_TICKS = 25;
+    static final int JUMP_KEY_GRACE_TICKS = 12;
 
     private Physics() {}
 

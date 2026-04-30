@@ -181,6 +181,74 @@ public class VariableJumpTest {
                 "velocity should not change from mid-air jump attempt");
     }
 
+    // --- Key repeat delay regression ---
+
+    public void testHoldJumpSurvivesKeyRepeatDelayGap() {
+        // Reproduce: in a terminal, holding a key produces one event then
+        // ~300-500ms of silence (OS key repeat delay) before repeats start.
+        // At 30fps that's ~10 ticks with no key event. The jump must not
+        // be cut short during this gap.
+        var game = new Game();
+        game.state = Game.State.PLAYING;
+
+        // Simulate initial jump key press (as handleEvent would do)
+        Physics.jump(game.player);
+        game.player.startJumpHold();
+        game.jumpKeyGraceTicks = Physics.JUMP_KEY_GRACE_TICKS;
+
+        // Run 11 ticks: first tick has the grace active, remaining ticks
+        // simulate the OS key repeat delay (no new key events arrive)
+        for (int i = 0; i < 11; i++) {
+            game.tick();
+        }
+
+        // With the bug: velocity cut at tick 5, player already falling, y ≈ 19
+        // With fix: grace period bridges the gap, player still ascending, y ≈ 35
+        assertTrue(game.player.y > Physics.GROUND_Y + 20,
+                "held jump should maintain height through key repeat delay gap, y="
+                + game.player.y + " (need >" + (Physics.GROUND_Y + 20) + ")");
+    }
+
+    public void testQuickTapStillProducesShortJump() {
+        // A quick tap (one event, no repeats) should still produce a shorter
+        // jump than a full hold, once the grace period expires.
+        var tapGame = new Game();
+        tapGame.state = Game.State.PLAYING;
+        Physics.jump(tapGame.player);
+        tapGame.player.startJumpHold();
+        tapGame.jumpKeyGraceTicks = Physics.JUMP_KEY_GRACE_TICKS;
+
+        // Let the grace expire and the jump get cut, then fall to ground
+        float tapPeak = tapGame.player.y;
+        while (!tapGame.player.grounded) {
+            tapGame.tick();
+            if (tapGame.player.y > tapPeak) tapPeak = tapGame.player.y;
+        }
+
+        // Full hold: refresh grace every few ticks (simulating key repeats)
+        var holdGame = new Game();
+        holdGame.state = Game.State.PLAYING;
+        Physics.jump(holdGame.player);
+        holdGame.player.startJumpHold();
+        holdGame.jumpKeyGraceTicks = Physics.JUMP_KEY_GRACE_TICKS;
+
+        float holdPeak = holdGame.player.y;
+        int tick = 0;
+        while (!holdGame.player.grounded) {
+            // Simulate key repeat events arriving every ~3 ticks after initial delay
+            if (tick >= 10 && tick % 3 == 0 && holdGame.player.jumpHeld) {
+                holdGame.jumpKeyGraceTicks = Physics.JUMP_KEY_GRACE_TICKS;
+            }
+            holdGame.tick();
+            if (holdGame.player.y > holdPeak) holdPeak = holdGame.player.y;
+            tick++;
+        }
+
+        assertTrue(holdPeak > tapPeak + 2.0f,
+                "full hold peak (" + holdPeak + ") should be taller than quick tap peak ("
+                + tapPeak + ")");
+    }
+
     // --- Obstacle rebalancing ---
 
     public void testWideHayBaleHeightIs6() {
