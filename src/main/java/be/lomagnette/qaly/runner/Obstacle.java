@@ -1,7 +1,7 @@
 package be.lomagnette.qaly.runner;
 
 public sealed abstract class Obstacle
-        permits Obstacle.Fence, Obstacle.HayBale, Obstacle.Puddle, Obstacle.Sheep, Obstacle.Chicken {
+        permits Obstacle.ConferenceStage, Obstacle.LaptopStack, Obstacle.CoffeeSpill, Obstacle.ConfusedIntern, Obstacle.SlowBuildServer {
 
     protected float x;
 
@@ -18,52 +18,52 @@ public sealed abstract class Obstacle
     public abstract boolean barkable();
     public abstract ObstacleType type();
 
-    public enum ObstacleType { FENCE, HAY_BALE_WIDE, HAY_BALE_TALL, PUDDLE, SHEEP, CHICKEN }
+    public enum ObstacleType { CONFERENCE_STAGE, LAPTOP_STACK_WIDE, LAPTOP_STACK_TALL, COFFEE_SPILL, CONFUSED_INTERN, SLOW_BUILD_SERVER }
 
-    public static final class Fence extends Obstacle {
-        public Fence(float x) { super(x); }
+    public static final class ConferenceStage extends Obstacle {
+        public ConferenceStage(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return 6; }
         public float height() { return 26; }
         public boolean barkable() { return false; }
-        public ObstacleType type() { return ObstacleType.FENCE; }
+        public ObstacleType type() { return ObstacleType.CONFERENCE_STAGE; }
     }
 
-    public static final class HayBale extends Obstacle {
+    public static final class LaptopStack extends Obstacle {
         private final boolean wide;
-        public HayBale(float x, boolean wide) { super(x); this.wide = wide; }
+        public LaptopStack(float x, boolean wide) { super(x); this.wide = wide; }
         public boolean isWide() { return wide; }
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return wide ? 18 : 8; }
         public float height() { return wide ? 9 : 25; }
         public boolean barkable() { return false; }
-        public ObstacleType type() { return wide ? ObstacleType.HAY_BALE_WIDE : ObstacleType.HAY_BALE_TALL; }
+        public ObstacleType type() { return wide ? ObstacleType.LAPTOP_STACK_WIDE : ObstacleType.LAPTOP_STACK_TALL; }
     }
 
-    public static final class Puddle extends Obstacle {
-        public Puddle(float x) { super(x); }
+    public static final class CoffeeSpill extends Obstacle {
+        public CoffeeSpill(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y - 1; }
         public float width() { return 22; }
         public float height() { return 6; }
         public boolean barkable() { return false; }
-        public ObstacleType type() { return ObstacleType.PUDDLE; }
+        public ObstacleType type() { return ObstacleType.COFFEE_SPILL; }
     }
 
-    public static final class Sheep extends Obstacle {
-        public Sheep(float x) { super(x); }
+    public static final class ConfusedIntern extends Obstacle {
+        public ConfusedIntern(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return 14; }
         public float height() { return 14; }
         public boolean barkable() { return true; }
-        public ObstacleType type() { return ObstacleType.SHEEP; }
+        public ObstacleType type() { return ObstacleType.CONFUSED_INTERN; }
     }
 
-    public static final class Chicken extends Obstacle {
-        public Chicken(float x) { super(x); }
+    public static final class SlowBuildServer extends Obstacle {
+        public SlowBuildServer(float x) { super(x); }
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return 7; }
         public float height() { return 10; }
         public boolean barkable() { return true; }
-        public ObstacleType type() { return ObstacleType.CHICKEN; }
+        public ObstacleType type() { return ObstacleType.SLOW_BUILD_SERVER; }
     }
 }

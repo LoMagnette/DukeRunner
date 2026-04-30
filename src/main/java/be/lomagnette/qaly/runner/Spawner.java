@@ -46,16 +46,16 @@ public class Spawner {
 
     private Obstacle createJumpObstacle(float x) {
         return switch (random.nextInt(4)) {
-            case 0 -> new Obstacle.Fence(x);
-            case 1 -> new Obstacle.HayBale(x, true);
-            case 2 -> new Obstacle.HayBale(x, false);
-            default -> new Obstacle.Puddle(x);
+            case 0 -> new Obstacle.ConferenceStage(x);
+            case 1 -> new Obstacle.LaptopStack(x, true);
+            case 2 -> new Obstacle.LaptopStack(x, false);
+            default -> new Obstacle.CoffeeSpill(x);
         };
     }
 
     private Obstacle createBarkObstacle(float x) {
         return random.nextFloat() < 0.6f
-                ? new Obstacle.Sheep(x)
-                : new Obstacle.Chicken(x);
+                ? new Obstacle.ConfusedIntern(x)
+                : new Obstacle.SlowBuildServer(x);
     }
 }

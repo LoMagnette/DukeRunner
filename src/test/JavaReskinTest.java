@@ -56,4 +56,57 @@ public class JavaReskinTest {
         assertEquals(Ground.DecoType.DOCKER_WHALE, types[4], "fifth deco type");
         assertEquals(Ground.DecoType.CLOUD, types[5], "sixth deco type");
     }
+
+    // --- Task 3: Obstacle type renames ---
+
+    public void testObstacleTypeEnumValues() {
+        var types = Obstacle.ObstacleType.values();
+        assertEquals(6, types.length, "should have 6 obstacle types");
+        assertEquals(Obstacle.ObstacleType.CONFERENCE_STAGE, types[0], "first obstacle type");
+        assertEquals(Obstacle.ObstacleType.LAPTOP_STACK_WIDE, types[1], "second obstacle type");
+        assertEquals(Obstacle.ObstacleType.LAPTOP_STACK_TALL, types[2], "third obstacle type");
+        assertEquals(Obstacle.ObstacleType.COFFEE_SPILL, types[3], "fourth obstacle type");
+        assertEquals(Obstacle.ObstacleType.CONFUSED_INTERN, types[4], "fifth obstacle type");
+        assertEquals(Obstacle.ObstacleType.SLOW_BUILD_SERVER, types[5], "sixth obstacle type");
+    }
+
+    public void testConferenceStageProperties() {
+        var o = new Obstacle.ConferenceStage(100);
+        assertEquals(6.0f, o.width(), "conference stage width");
+        assertEquals(26.0f, o.height(), "conference stage height");
+        assertFalse(o.barkable(), "conference stage not barkable");
+    }
+
+    public void testLaptopStackWideProperties() {
+        var o = new Obstacle.LaptopStack(100, true);
+        assertEquals(18.0f, o.width(), "laptop stack wide width");
+        assertEquals(9.0f, o.height(), "laptop stack wide height");
+        assertFalse(o.barkable(), "laptop stack not barkable");
+    }
+
+    public void testLaptopStackTallProperties() {
+        var o = new Obstacle.LaptopStack(100, false);
+        assertEquals(8.0f, o.width(), "laptop stack tall width");
+        assertEquals(25.0f, o.height(), "laptop stack tall height");
+    }
+
+    public void testCoffeeSpillProperties() {
+        var o = new Obstacle.CoffeeSpill(100);
+        assertEquals(22.0f, o.width(), "coffee spill width");
+        assertEquals(6.0f, o.height(), "coffee spill height");
+    }
+
+    public void testConfusedInternProperties() {
+        var o = new Obstacle.ConfusedIntern(100);
+        assertEquals(14.0f, o.width(), "confused intern width");
+        assertEquals(14.0f, o.height(), "confused intern height");
+        assertTrue(o.barkable(), "confused intern is barkable");
+    }
+
+    public void testSlowBuildServerProperties() {
+        var o = new Obstacle.SlowBuildServer(100);
+        assertEquals(7.0f, o.width(), "slow build server width");
+        assertEquals(10.0f, o.height(), "slow build server height");
+        assertTrue(o.barkable(), "slow build server is barkable");
+    }
 }

@@ -141,7 +141,7 @@ public final class Sprites {
 
     // ── Obstacles (braille dots, scaled ~1.3x) ─────────────────────
 
-    public static double[][] fence() {
+    public static double[][] conferenceStage() {
         var pts = new ArrayList<double[]>();
         fillRect(pts, 0, 0, 1, 25);    // left post
         fillRect(pts, 4, 0, 5, 25);    // right post
@@ -150,7 +150,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] hayBaleWide() {
+    public static double[][] laptopStackWide() {
         var pts = new ArrayList<double[]>();
         fillRect(pts, 2, 0, 15, 8);    // core
         fillRect(pts, 1, 1, 16, 7);    // wider middle
@@ -161,7 +161,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] hayBaleTall() {
+    public static double[][] laptopStackTall() {
         var pts = new ArrayList<double[]>();
         fillRect(pts, 2, 0, 5, 24);    // core
         fillRect(pts, 1, 1, 6, 23);    // wider middle
@@ -169,7 +169,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] puddle() {
+    public static double[][] coffeeSpill() {
         var pts = new ArrayList<double[]>();
         fillRect(pts, 2, 0, 19, 2);    // base
         fillRect(pts, 1, 1, 20, 3);    // middle
@@ -180,7 +180,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] sheep() {
+    public static double[][] confusedIntern() {
         var pts = new ArrayList<double[]>();
         // Fluffy body (oval)
         fillRect(pts, 2, 5, 10, 12);
@@ -198,7 +198,7 @@ public final class Sprites {
         return toArray(pts);
     }
 
-    public static double[][] chicken() {
+    public static double[][] slowBuildServer() {
         var pts = new ArrayList<double[]>();
         // Body
         fillRect(pts, 1, 3, 4, 7);

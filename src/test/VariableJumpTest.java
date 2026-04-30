@@ -74,23 +74,23 @@ public class VariableJumpTest {
 
     // --- Obstacle dimensions ---
 
-    public void testWideHayBaleHeight() {
-        var bale = new Obstacle.HayBale(100, true);
-        assertEquals(9.0f, bale.height(), "wide hay bale height should be 9");
+    public void testWideLaptopStackHeight() {
+        var stack = new Obstacle.LaptopStack(100, true);
+        assertEquals(9.0f, stack.height(), "wide laptop stack height should be 9");
     }
 
-    public void testTallHayBaleHeight() {
-        var bale = new Obstacle.HayBale(100, false);
-        assertEquals(25.0f, bale.height(), "tall hay bale height should be 25");
+    public void testTallLaptopStackHeight() {
+        var stack = new Obstacle.LaptopStack(100, false);
+        assertEquals(25.0f, stack.height(), "tall laptop stack height should be 25");
     }
 
-    public void testFenceHeight() {
-        var fence = new Obstacle.Fence(100);
-        assertEquals(26.0f, fence.height(), "fence height should be 26");
+    public void testConferenceStageHeight() {
+        var stage = new Obstacle.ConferenceStage(100);
+        assertEquals(26.0f, stage.height(), "conference stage height should be 26");
     }
 
-    public void testPuddleHeight() {
-        var puddle = new Obstacle.Puddle(100);
-        assertEquals(6.0f, puddle.height(), "puddle height should be 6");
+    public void testCoffeeSpillHeight() {
+        var spill = new Obstacle.CoffeeSpill(100);
+        assertEquals(6.0f, spill.height(), "coffee spill height should be 6");
     }
 }

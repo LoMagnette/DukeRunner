@@ -214,19 +214,19 @@ public final class Renderer {
     private static void paintObstacles(dev.tamboui.widgets.canvas.Context ctx, Game game) {
         for (var obstacle : game.obstacles) {
             double[][] sprite = switch (obstacle.type()) {
-                case FENCE -> Sprites.fence();
-                case HAY_BALE_WIDE -> Sprites.hayBaleWide();
-                case HAY_BALE_TALL -> Sprites.hayBaleTall();
-                case PUDDLE -> Sprites.puddle();
-                case SHEEP -> Sprites.sheep();
-                case CHICKEN -> Sprites.chicken();
+                case CONFERENCE_STAGE -> Sprites.conferenceStage();
+                case LAPTOP_STACK_WIDE -> Sprites.laptopStackWide();
+                case LAPTOP_STACK_TALL -> Sprites.laptopStackTall();
+                case COFFEE_SPILL -> Sprites.coffeeSpill();
+                case CONFUSED_INTERN -> Sprites.confusedIntern();
+                case SLOW_BUILD_SERVER -> Sprites.slowBuildServer();
             };
             Color color = switch (obstacle.type()) {
-                case FENCE -> Color.rgb(139, 90, 43);
-                case HAY_BALE_WIDE, HAY_BALE_TALL -> Color.YELLOW;
-                case PUDDLE -> Color.CYAN;
-                case SHEEP -> Color.WHITE;
-                case CHICKEN -> Color.rgb(200, 150, 50);
+                case CONFERENCE_STAGE -> Color.rgb(139, 90, 43);
+                case LAPTOP_STACK_WIDE, LAPTOP_STACK_TALL -> Color.YELLOW;
+                case COFFEE_SPILL -> Color.CYAN;
+                case CONFUSED_INTERN -> Color.WHITE;
+                case SLOW_BUILD_SERVER -> Color.rgb(200, 150, 50);
             };
             ctx.draw(Points.of(
                     Sprites.translate(sprite, obstacle.x(), obstacle.bottomY()),
