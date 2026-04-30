@@ -69,10 +69,11 @@ public final class Renderer {
                 .yBounds(0, ch)
                 .marker(Marker.BRAILLE)
                 .paint(ctx -> {
-                    double offsetX = Math.max(0, (cw - 26) / 2.0);
-                    double offsetY = Math.max(0, (ch - 18) / 2.0);
+                    var sitting = Sprites.dogSitting();
+                    double offsetX = Math.max(0, (cw - 38) / 2.0);
+                    double offsetY = Math.max(0, (ch - 24) / 2.0);
                     ctx.draw(Points.of(
-                            Sprites.translate(Sprites.dogSitting(), offsetX, offsetY),
+                            Sprites.translate(sitting.body(), offsetX, offsetY),
                             Color.WHITE));
                 })
                 .build();
@@ -234,7 +235,7 @@ public final class Renderer {
     }
 
     private static void paintPlayer(dev.tamboui.widgets.canvas.Context ctx, Game game) {
-        double[][] sprite;
+        Sprites.DogSprite sprite;
         if (game.woofTimer > 5) {
             sprite = Sprites.dogBarking();
         } else if (!game.player.grounded) {
@@ -242,10 +243,12 @@ public final class Renderer {
         } else {
             sprite = Sprites.dogRunning();
         }
-        // Render sprite with tail overhang to the left of hitbox
-        ctx.draw(Points.of(
-                Sprites.translate(sprite, Player.X - 6, game.player.y),
-                Color.WHITE));
+        double dx = Player.X - 10;
+        double dy = game.player.y;
+        ctx.draw(Points.of(Sprites.translate(sprite.body(), dx, dy), Color.WHITE));
+        if (sprite.tongue().length > 0) {
+            ctx.draw(Points.of(Sprites.translate(sprite.tongue(), dx, dy), Color.RED));
+        }
     }
 
     private static void paintWoofEffect(dev.tamboui.widgets.canvas.Context ctx, Game game) {
