@@ -35,7 +35,7 @@ public sealed abstract class Obstacle
         public boolean isWide() { return wide; }
         public float bottomY() { return Physics.GROUND_Y; }
         public float width() { return wide ? 14 : 6; }
-        public float height() { return wide ? 10 : 18; }
+        public float height() { return wide ? 6 : 18; }
         public boolean barkable() { return false; }
         public ObstacleType type() { return wide ? ObstacleType.HAY_BALE_WIDE : ObstacleType.HAY_BALE_TALL; }
     }

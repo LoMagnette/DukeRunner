@@ -160,6 +160,28 @@ public class VariableJumpTest {
                 "velocity should not change from mid-air jump attempt");
     }
 
+    // --- Obstacle rebalancing ---
+
+    public void testWideHayBaleHeightIs6() {
+        var bale = new Obstacle.HayBale(100, true);
+        assertEquals(6.0f, bale.height(), "wide hay bale height should be 6");
+    }
+
+    public void testTallHayBaleHeightUnchanged() {
+        var bale = new Obstacle.HayBale(100, false);
+        assertEquals(18.0f, bale.height(), "tall hay bale height should remain 18");
+    }
+
+    public void testFenceHeightUnchanged() {
+        var fence = new Obstacle.Fence(100);
+        assertEquals(20.0f, fence.height(), "fence height should remain 20");
+    }
+
+    public void testPuddleHeightUnchanged() {
+        var puddle = new Obstacle.Puddle(100);
+        assertEquals(3.0f, puddle.height(), "puddle height should remain 3");
+    }
+
     private float calculateFullJumpPeak() {
         // Simulate a full jump with no velocity cut
         var p = new Player();
