@@ -28,7 +28,7 @@ public class QalyRunner {
 
     public static void main(String[] args) throws Exception {
         var config = TuiConfig.builder()
-                .tickRate(Duration.ofMillis(33))
+                .tickRate(Duration.ofMillis(16))
                 .build();
 
         var game = new Game();
