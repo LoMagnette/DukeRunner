@@ -161,95 +161,132 @@ public final class Sprites {
     }
 
     // ── Obstacles (Java-themed, same collision dimensions) ────────
+    // Using fromBitmap for precise, readable silhouettes.
 
-    // Podium/stage structure (6w × 26h)
+    // Lectern/podium (6w × 26h)
     public static double[][] conferenceStage() {
-        var pts = new ArrayList<double[]>();
-        fillRect(pts, 0, 0, 5, 2);     // base platform
-        fillRect(pts, 1, 0, 4, 18);    // podium body
-        fillRect(pts, 0, 18, 5, 20);   // podium top
-        fillRect(pts, 2, 20, 3, 25);   // microphone stand
-        dot(pts, 1, 25); dot(pts, 4, 25); // mic top
-        return toArray(pts);
+        return fromBitmap(
+            " #### ",  // podium top surface
+            "######",  // lip
+            "######",
+            " #### ",  // front panel
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",
+            " #### ",  // panel bottom
+            "  ##  ",  // stem
+            "  ##  ",
+            "  ##  ",
+            "  ##  ",
+            "  ##  ",
+            " #### ",  // base widens
+            " #### ",
+            "######",  // base
+            "######",
+            "######"   // base bottom
+        );
     }
 
-    // Wide row of laptops (18w × 9h)
+    // Three monitors on a desk (18w × 9h)
     public static double[][] laptopStackWide() {
-        var pts = new ArrayList<double[]>();
-        fillRect(pts, 0, 0, 17, 1);    // base
-        fillRect(pts, 1, 2, 5, 7);     // laptop 1 screen
-        fillRect(pts, 0, 1, 6, 2);     // laptop 1 keyboard
-        fillRect(pts, 7, 2, 11, 7);    // laptop 2 screen
-        fillRect(pts, 6, 1, 12, 2);    // laptop 2 keyboard
-        fillRect(pts, 13, 2, 17, 7);   // laptop 3 screen
-        fillRect(pts, 12, 1, 17, 2);   // laptop 3 keyboard
-        dot(pts, 3, 8); dot(pts, 9, 8); dot(pts, 15, 8); // screen glints
-        return toArray(pts);
+        return fromBitmap(
+            "  ##    ##    ##  ",  // screen tops
+            " ####  ####  #### ",  // screens
+            " ####  ####  #### ",
+            " ####  ####  #### ",  // screen bottoms
+            "##################",  // desk surface
+            "##################",
+            "##################",
+            "##################",
+            "##################"   // base
+        );
     }
 
-    // Vertically stacked laptops (8w × 25h)
+    // Three laptops stacked vertically (8w × 25h)
     public static double[][] laptopStackTall() {
-        var pts = new ArrayList<double[]>();
-        // Bottom laptop
-        fillRect(pts, 0, 0, 7, 1);     // keyboard
-        fillRect(pts, 1, 2, 6, 7);     // screen
-        // Middle laptop
-        fillRect(pts, 0, 8, 7, 9);     // keyboard
-        fillRect(pts, 1, 10, 6, 15);   // screen
-        // Top laptop
-        fillRect(pts, 0, 16, 7, 17);   // keyboard
-        fillRect(pts, 1, 18, 6, 23);   // screen
-        dot(pts, 3, 24);               // top glint
-        return toArray(pts);
+        return fromBitmap(
+            "  ####  ",  // top laptop screen
+            " ###### ",
+            " ###### ",
+            " ###### ",
+            " ###### ",
+            "########",  // keyboard
+            "########",
+            "        ",  // gap
+            "        ",
+            "  ####  ",  // middle laptop screen
+            " ###### ",
+            " ###### ",
+            " ###### ",
+            " ###### ",
+            "########",  // keyboard
+            "########",
+            "        ",  // gap
+            "        ",
+            "  ####  ",  // bottom laptop screen
+            " ###### ",
+            " ###### ",
+            " ###### ",
+            " ###### ",
+            "########",  // keyboard
+            "########"   // base
+        );
     }
 
-    // Coffee spill on ground (22w × 6h)
+    // Puddle on ground (22w × 6h)
     public static double[][] coffeeSpill() {
-        var pts = new ArrayList<double[]>();
-        fillRect(pts, 3, 0, 18, 1);    // thin base
-        fillRect(pts, 1, 1, 20, 3);    // main spill
-        fillRect(pts, 0, 2, 21, 4);    // widest spread
-        // Splatter drops
-        dot(pts, 0, 0); dot(pts, 21, 0);
-        dot(pts, 2, 5); dot(pts, 8, 5); dot(pts, 14, 5); dot(pts, 19, 5);
-        return toArray(pts);
+        return fromBitmap(
+            "  ##################  ",  // top edge
+            " #################### ",  // wider
+            "######################",  // widest
+            "######################",  // widest
+            " #################### ",  // narrowing
+            "   ################   "   // base
+        );
     }
 
-    // Person silhouette - confused intern (14w × 14h)
+    // Person silhouette with arms out (14w × 14h)
     public static double[][] confusedIntern() {
-        var pts = new ArrayList<double[]>();
-        // Head (round)
-        fillRect(pts, 5, 10, 8, 13);
-        dot(pts, 4, 11); dot(pts, 9, 11);
-        dot(pts, 4, 12); dot(pts, 9, 12);
-        // Neck
-        dot(pts, 6, 9); dot(pts, 7, 9);
-        // Body (torso)
-        fillRect(pts, 3, 4, 10, 8);
-        fillRect(pts, 4, 3, 9, 9);
-        // Arms out (confused gesture)
-        fillRect(pts, 0, 6, 3, 8);     // left arm
-        fillRect(pts, 10, 6, 13, 8);   // right arm
-        // Question mark above head
-        dot(pts, 7, 14);
-        // Legs
-        fillRect(pts, 4, 0, 5, 3);
-        fillRect(pts, 8, 0, 9, 3);
-        return toArray(pts);
+        return fromBitmap(
+            "     ####     ",  // head top
+            "    ######    ",  // head
+            "    ######    ",  // head
+            "     ####     ",  // chin
+            "      ##      ",  // neck
+            "  ##########  ",  // shoulders
+            "##############",  // arms extended wide
+            "##############",  // arms + torso
+            "  ##########  ",  // torso
+            "    ######    ",  // waist
+            "    ######    ",  // hips
+            "    ##  ##    ",  // legs
+            "    ##  ##    ",  // legs
+            "   ###  ###   "   // feet
+        );
     }
 
-    // Server/computer box (7w × 10h)
+    // Server rack box (7w × 10h)
     public static double[][] slowBuildServer() {
-        var pts = new ArrayList<double[]>();
-        // Server box
-        fillRect(pts, 0, 0, 6, 9);
-        // Drive bays (gaps)
-        dot(pts, 1, 8); dot(pts, 2, 8); dot(pts, 3, 8); // LED row top
-        dot(pts, 1, 5); dot(pts, 2, 5); dot(pts, 3, 5); // LED row mid
-        dot(pts, 1, 2); dot(pts, 2, 2); dot(pts, 3, 2); // LED row bottom
-        // Ventilation slots
-        dot(pts, 5, 7); dot(pts, 5, 4); dot(pts, 5, 1);
-        return toArray(pts);
+        return fromBitmap(
+            "#######",  // top frame
+            "# ### #",  // drive bay
+            "#     #",  // empty slot
+            "# ### #",  // drive bay
+            "#     #",  // empty slot
+            "# ### #",  // drive bay
+            "#     #",  // empty slot
+            "# ### #",  // drive bay
+            "#######",  // bottom frame
+            "#######"   // base
+        );
     }
 
     // ── Decorations (Java-themed, ~5w × 5-8h) ──────────────────
