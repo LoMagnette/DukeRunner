@@ -1,5 +1,5 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
-//JAVA 26
+//JAVA 25
 //DEPS dev.tamboui:tamboui-tui:LATEST
 //DEPS dev.tamboui:tamboui-widgets:LATEST
 //DEPS dev.tamboui:tamboui-panama-backend:LATEST
@@ -13,6 +13,7 @@
 //SOURCES Renderer.java
 //SOURCES Sprites.java
 //SOURCES Season.java
+//FILES META-INF/native-image/resource-config.json=resource-config.json
 
 package be.lomagnette.qaly.runner;
 
