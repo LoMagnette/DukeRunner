@@ -21,6 +21,7 @@
 //SOURCES ../main/java/be/lomagnette/qaly/runner/fx/GroundFX.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/fx/SpawnerFX.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/fx/GameFX.java
+//SOURCES ../main/java/be/lomagnette/qaly/runner/fx/SpritesFX.java
 //SOURCES VariableJumpTest.java
 //SOURCES JavaReskinTest.java
 //SOURCES JavaFXGameTest.java

@@ -203,6 +203,47 @@ public class JavaFXGameTest {
         assertEquals(GameFX.State.GAME_OVER, game.state, "collision should trigger GAME_OVER");
     }
 
+    // --- SpritesFX ---
+    // Note: WritableImage requires JavaFX toolkit (display server).
+    // These tests verify compilation + sprite contract. On headless systems they skip gracefully.
+
+    private static boolean jfxToolkitAvailable() {
+        try {
+            new javafx.scene.image.WritableImage(1, 1);
+            return true;
+        } catch (ExceptionInInitializerError | RuntimeException e) {
+            return false;
+        }
+    }
+
+    public void testSpritesFXDukeRunningNotNull() {
+        if (!jfxToolkitAvailable()) return; // skip on headless
+        var img = SpritesFX.dukeRunning();
+        assertTrue(img != null, "dukeRunning should not be null");
+        assertTrue(img.getWidth() > 0, "dukeRunning should have width > 0");
+        assertTrue(img.getHeight() > 0, "dukeRunning should have height > 0");
+    }
+
+    public void testSpritesFXAllObstacleSpritesExist() {
+        if (!jfxToolkitAvailable()) return;
+        assertTrue(SpritesFX.conferenceStage() != null, "conferenceStage sprite");
+        assertTrue(SpritesFX.laptopStackWide() != null, "laptopStackWide sprite");
+        assertTrue(SpritesFX.laptopStackTall() != null, "laptopStackTall sprite");
+        assertTrue(SpritesFX.coffeeSpill() != null, "coffeeSpill sprite");
+        assertTrue(SpritesFX.confusedIntern() != null, "confusedIntern sprite");
+        assertTrue(SpritesFX.slowBuildServer() != null, "slowBuildServer sprite");
+    }
+
+    public void testSpritesFXAllDecoSpritesExist() {
+        if (!jfxToolkitAvailable()) return;
+        assertTrue(SpritesFX.coffeeCup() != null, "coffeeCup sprite");
+        assertTrue(SpritesFX.terminal() != null, "terminal sprite");
+        assertTrue(SpritesFX.gitBranch() != null, "gitBranch sprite");
+        assertTrue(SpritesFX.ideIcon() != null, "ideIcon sprite");
+        assertTrue(SpritesFX.dockerWhale() != null, "dockerWhale sprite");
+        assertTrue(SpritesFX.cloud() != null, "cloud sprite");
+    }
+
     // --- ObstacleFX ---
 
     public void testObstacleFXDimensions() {
