@@ -152,6 +152,57 @@ public class JavaFXGameTest {
         }
     }
 
+    // --- GameFX ---
+
+    public void testGameFXStartsInTitleState() {
+        var game = new GameFX();
+        assertEquals(GameFX.State.TITLE, game.state, "game starts in TITLE state");
+    }
+
+    public void testGameFXTickIncreasesScore() {
+        var game = new GameFX();
+        game.handleKeyPress(javafx.scene.input.KeyCode.SPACE); // start
+        game.tick();
+        game.tick();
+        game.tick();
+        assertTrue(game.score > 0, "score should increase after ticks");
+    }
+
+    public void testGameFXSpeedCapped() {
+        var game = new GameFX();
+        game.handleKeyPress(javafx.scene.input.KeyCode.SPACE);
+        for (int i = 0; i < 5000; i++) {
+            game.tick();
+            if (game.state != GameFX.State.PLAYING) {
+                // Reset if game over (collision)
+                game.handleKeyPress(javafx.scene.input.KeyCode.SPACE);
+            }
+        }
+        assertTrue(game.speed <= 5.0f, "speed should be capped at MAX_SPEED");
+    }
+
+    public void testGameFXEraCyclesWithScore() {
+        var game = new GameFX();
+        game.handleKeyPress(javafx.scene.input.KeyCode.SPACE);
+        // Tick to score 100+ without collision (clear obstacles)
+        for (int i = 0; i < 150; i++) {
+            game.obstacles.clear(); // prevent collision
+            game.tick();
+        }
+        assertTrue(game.score >= 100, "score should reach 100+");
+        assertEquals(SeasonFX.JAVA_5, game.era, "era should be JAVA_5 at score 100+");
+    }
+
+    public void testGameFXCollisionEndsGame() {
+        var game = new GameFX();
+        game.handleKeyPress(javafx.scene.input.KeyCode.SPACE);
+        game.tick(); // enter playing
+        // Place obstacle directly on player
+        game.obstacles.add(new ObstacleFX.ConferenceStage(PlayerFX.X));
+        game.tick(); // should detect collision
+        assertEquals(GameFX.State.GAME_OVER, game.state, "collision should trigger GAME_OVER");
+    }
+
     // --- ObstacleFX ---
 
     public void testObstacleFXDimensions() {
