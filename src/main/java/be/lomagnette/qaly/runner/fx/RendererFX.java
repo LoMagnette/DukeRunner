@@ -190,7 +190,8 @@ public final class RendererFX {
                     : SpritesFX.dukeRunning2();
         }
         double dx = (PlayerFX.X - 10) * SCALE;
-        double dy = gameToScreenY(game.player.y + PlayerFX.HEIGHT, h);
+        double feetScreenY = gameToScreenY(game.player.y, h);
+        double dy = feetScreenY - sprite.getHeight();
         gc.drawImage(sprite, dx, dy);
     }
 
