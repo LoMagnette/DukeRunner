@@ -75,6 +75,9 @@ public final class RendererFX {
         // Player
         renderPlayer(gc, game, h);
 
+        // Particles
+        game.particles.render(gc, h);
+
         // Throw effect text
         if (game.throwTimer > 0) {
             gc.setFont(Font.font("Monospaced", 14));

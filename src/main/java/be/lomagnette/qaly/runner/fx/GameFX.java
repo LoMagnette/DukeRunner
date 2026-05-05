@@ -23,6 +23,8 @@ public class GameFX {
     public int canvasHeight = 400;
     public int animationFrame;
     public ParallaxBackground parallax = new ParallaxBackground();
+    public ParticleSystem particles = new ParticleSystem();
+    private SeasonFX previousEra = SeasonFX.JAVA_1;
 
     static final float BASE_SPEED = 1.5f;
     static final float SPEED_INCREMENT = 0.15f;
@@ -46,6 +48,8 @@ public class GameFX {
         throwTimer = 0;
         animationFrame = 0;
         parallax.reset();
+        particles.reset();
+        previousEra = SeasonFX.JAVA_1;
     }
 
     public boolean handleKeyPress(KeyCode code) {
@@ -102,7 +106,14 @@ public class GameFX {
         score++;
         animationFrame++;
         speed = Math.min(BASE_SPEED + (score / 50) * SPEED_INCREMENT, MAX_SPEED);
+        SeasonFX oldEra = era;
         era = SeasonFX.forScore(score);
+
+        // Era change sparkle
+        if (era != oldEra) {
+            particles.emitSparkle(PlayerFX.X + PlayerFX.WIDTH / 2,
+                    player.y + PlayerFX.HEIGHT / 2, era.accentColor());
+        }
 
         PhysicsFX.applyGravity(player);
         player.tickCooldown();
@@ -116,8 +127,15 @@ public class GameFX {
         obstacles.forEach(o -> o.scroll(speed));
         obstacles.removeIf(o -> o.x() + o.width() < -10);
 
+        // Dust particles when running on ground
+        if (player.grounded) {
+            particles.emitDust(PlayerFX.X, player.y);
+        }
+
         for (var o : obstacles) {
             if (PhysicsFX.collides(player, o)) {
+                particles.emitExplosion(PlayerFX.X + PlayerFX.WIDTH / 2,
+                        player.y + PlayerFX.HEIGHT / 2);
                 state = State.GAME_OVER;
                 return;
             }
@@ -127,5 +145,7 @@ public class GameFX {
                 .ifPresent(obstacles::add);
 
         if (throwTimer > 0) throwTimer--;
+
+        particles.tick();
     }
 }
