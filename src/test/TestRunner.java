@@ -3,6 +3,7 @@
 //DEPS dev.tamboui:tamboui-tui:LATEST
 //DEPS dev.tamboui:tamboui-widgets:LATEST
 //DEPS dev.tamboui:tamboui-panama-backend:LATEST
+//DEPS org.openjfx:javafx-graphics:25:${os.detected.jfxname}
 //JAVA_OPTIONS --enable-native-access=ALL-UNNAMED
 //SOURCES ../main/java/be/lomagnette/qaly/runner/Game.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/Player.java
@@ -13,8 +14,13 @@
 //SOURCES ../main/java/be/lomagnette/qaly/runner/Renderer.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/Sprites.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/Season.java
+//SOURCES ../main/java/be/lomagnette/qaly/runner/fx/SeasonFX.java
+//SOURCES ../main/java/be/lomagnette/qaly/runner/fx/PlayerFX.java
+//SOURCES ../main/java/be/lomagnette/qaly/runner/fx/PhysicsFX.java
+//SOURCES ../main/java/be/lomagnette/qaly/runner/fx/ObstacleFX.java
 //SOURCES VariableJumpTest.java
 //SOURCES JavaReskinTest.java
+//SOURCES JavaFXGameTest.java
 
 package be.lomagnette.qaly.runner;
 
@@ -38,7 +44,8 @@ public class TestRunner {
 
         List<Class<?>> testClasses = List.of(
                 VariableJumpTest.class,
-                JavaReskinTest.class
+                JavaReskinTest.class,
+                JavaFXGameTest.class
         );
 
         for (var clazz : testClasses) {
