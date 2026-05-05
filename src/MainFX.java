@@ -12,6 +12,7 @@
 //SOURCES main/java/be/lomagnette/qaly/runner/fx/SeasonFX.java
 //SOURCES main/java/be/lomagnette/qaly/runner/fx/SpritesFX.java
 //SOURCES main/java/be/lomagnette/qaly/runner/fx/RendererFX.java
+//SOURCES main/java/be/lomagnette/qaly/runner/fx/ParallaxBackground.java
 //SOURCES main/java/be/lomagnette/qaly/runner/fx/QalyRunnerFX.java
 
 package be.lomagnette.qaly.runner.fx;

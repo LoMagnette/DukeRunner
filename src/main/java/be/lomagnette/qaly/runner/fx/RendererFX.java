@@ -53,9 +53,8 @@ public final class RendererFX {
     }
 
     private static void renderGame(GraphicsContext gc, GameFX game, double w, double h) {
-        // Sky background
-        gc.setFill(skyColor(game.era));
-        gc.fillRect(0, 0, w, h);
+        // Parallax background (replaces flat sky)
+        game.parallax.render(gc, game.era, w, h);
 
         // Ground
         double groundY = gameToScreenY(PhysicsFX.GROUND_Y, h);
@@ -189,12 +188,4 @@ public final class RendererFX {
         return screenH - gameY * SCALE;
     }
 
-    private static Color skyColor(SeasonFX era) {
-        return switch (era) {
-            case JAVA_1 -> Color.rgb(15, 25, 15);
-            case JAVA_5 -> Color.rgb(25, 20, 10);
-            case JAVA_11 -> Color.rgb(15, 20, 30);
-            case JAVA_21 -> Color.rgb(20, 15, 25);
-        };
-    }
 }

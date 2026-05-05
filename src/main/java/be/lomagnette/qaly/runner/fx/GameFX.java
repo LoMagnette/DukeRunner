@@ -22,6 +22,7 @@ public class GameFX {
     public int canvasWidth = 800;
     public int canvasHeight = 400;
     public int animationFrame;
+    public ParallaxBackground parallax = new ParallaxBackground();
 
     static final float BASE_SPEED = 1.5f;
     static final float SPEED_INCREMENT = 0.15f;
@@ -44,6 +45,7 @@ public class GameFX {
         spawner = new SpawnerFX();
         throwTimer = 0;
         animationFrame = 0;
+        parallax.reset();
     }
 
     public boolean handleKeyPress(KeyCode code) {
@@ -104,6 +106,8 @@ public class GameFX {
 
         PhysicsFX.applyGravity(player);
         player.tickCooldown();
+
+        parallax.scroll(speed);
 
         ground.setSeason(era);
         ground.setMaxX(canvasWidth);
