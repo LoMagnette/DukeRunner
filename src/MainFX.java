@@ -3,6 +3,14 @@
 //DEPS org.openjfx:javafx-controls:25:${os.detected.jfxname}
 //DEPS org.openjfx:javafx-graphics:25:${os.detected.jfxname}
 //JAVA_OPTIONS --enable-native-access=ALL-UNNAMED
+//FILES META-INF/native-image/fx/reflect-config.json=main/java/be/lomagnette/qaly/runner/fx/reflect-config.json
+//FILES META-INF/native-image/fx/resource-config.json=main/java/be/lomagnette/qaly/runner/fx/resource-config.json
+//
+// Native image build (requires GraalVM with JavaFX support):
+//   jbang export native src/MainFX.java
+//
+// For Gluon GluonFX substrate (recommended for JavaFX native):
+//   See https://docs.gluonhq.com/ for platform-specific setup
 //SOURCES main/java/be/lomagnette/qaly/runner/fx/GameFX.java
 //SOURCES main/java/be/lomagnette/qaly/runner/fx/PlayerFX.java
 //SOURCES main/java/be/lomagnette/qaly/runner/fx/PhysicsFX.java
