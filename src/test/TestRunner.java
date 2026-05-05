@@ -25,6 +25,7 @@
 //SOURCES ../main/java/be/lomagnette/qaly/runner/fx/RendererFX.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/fx/ParallaxBackground.java
 //SOURCES ../main/java/be/lomagnette/qaly/runner/fx/ParticleSystem.java
+//SOURCES ../main/java/be/lomagnette/qaly/runner/fx/ScreenShake.java
 //SOURCES VariableJumpTest.java
 //SOURCES JavaReskinTest.java
 //SOURCES JavaFXGameTest.java

@@ -53,6 +53,11 @@ public final class RendererFX {
     }
 
     private static void renderGame(GraphicsContext gc, GameFX game, double w, double h) {
+        // Screen shake offset
+        if (game.screenShake.isActive()) {
+            gc.translate(game.screenShake.offsetX(), game.screenShake.offsetY());
+        }
+
         // Parallax background (replaces flat sky)
         game.parallax.render(gc, game.era, w, h);
 

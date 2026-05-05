@@ -24,6 +24,7 @@ public class GameFX {
     public int animationFrame;
     public ParallaxBackground parallax = new ParallaxBackground();
     public ParticleSystem particles = new ParticleSystem();
+    public ScreenShake screenShake = new ScreenShake();
     private SeasonFX previousEra = SeasonFX.JAVA_1;
 
     static final float BASE_SPEED = 1.5f;
@@ -49,6 +50,7 @@ public class GameFX {
         animationFrame = 0;
         parallax.reset();
         particles.reset();
+        screenShake.reset();
         previousEra = SeasonFX.JAVA_1;
     }
 
@@ -101,6 +103,10 @@ public class GameFX {
     }
 
     public void tick() {
+        // Shake and particles continue ticking during game over
+        screenShake.tick();
+        particles.tick();
+
         if (state != State.PLAYING) return;
 
         score++;
@@ -136,6 +142,7 @@ public class GameFX {
             if (PhysicsFX.collides(player, o)) {
                 particles.emitExplosion(PlayerFX.X + PlayerFX.WIDTH / 2,
                         player.y + PlayerFX.HEIGHT / 2);
+                screenShake.trigger(8.0f);
                 state = State.GAME_OVER;
                 return;
             }
@@ -145,7 +152,5 @@ public class GameFX {
                 .ifPresent(obstacles::add);
 
         if (throwTimer > 0) throwTimer--;
-
-        particles.tick();
     }
 }
