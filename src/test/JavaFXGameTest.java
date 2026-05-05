@@ -110,6 +110,48 @@ public class JavaFXGameTest {
         assertFalse(PhysicsFX.inThrowRange(p, stage), "non-throwable not in throw range");
     }
 
+    // --- GroundFX ---
+
+    public void testGroundFXInitHasDecorations() {
+        var ground = new GroundFX();
+        assertFalse(ground.decorations().isEmpty(), "ground should have decorations after init");
+    }
+
+    public void testGroundFXScrollMovesDecorations() {
+        var ground = new GroundFX();
+        float firstX = ground.decorations().getFirst().x();
+        ground.scroll(2.0f);
+        float afterX = ground.decorations().getFirst().x();
+        assertTrue(afterX < firstX, "decoration x should decrease after scroll");
+    }
+
+    // --- SpawnerFX ---
+
+    public void testSpawnerFXRespectsMinGap() {
+        var spawner = new SpawnerFX();
+        // At score 0, minGap = max(40, 80-0) = 80. No spawn should happen before 80 ticks.
+        for (int i = 0; i < 40; i++) {
+            assertTrue(spawner.maybeSpawn(0, 1.5f, 200).isEmpty(),
+                    "should not spawn before minGap at tick " + i);
+        }
+    }
+
+    public void testSpawnerFXNeverTwoThrowablesInRow() {
+        var spawner = new SpawnerFX();
+        boolean lastWasThrowable = false;
+        // Force many spawns and check no two throwables in a row
+        for (int i = 0; i < 10000; i++) {
+            var result = spawner.maybeSpawn(500, 3.0f, 200);
+            if (result.isPresent()) {
+                boolean isThrowable = result.get().throwable();
+                if (lastWasThrowable) {
+                    assertFalse(isThrowable, "two throwables in a row at iteration " + i);
+                }
+                lastWasThrowable = isThrowable;
+            }
+        }
+    }
+
     // --- ObstacleFX ---
 
     public void testObstacleFXDimensions() {
