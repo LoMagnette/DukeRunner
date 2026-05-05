@@ -25,6 +25,7 @@ public class GameFX {
     public ParallaxBackground parallax = new ParallaxBackground();
     public ParticleSystem particles = new ParticleSystem();
     public ScreenShake screenShake = new ScreenShake();
+    public AudioFX audio = new AudioFX();
     private SeasonFX previousEra = SeasonFX.JAVA_1;
     public int eraTransitionTicks = 0;
     public SeasonFX transitionFromEra = SeasonFX.JAVA_1;
@@ -72,6 +73,7 @@ public class GameFX {
             }
             case PLAYING -> {
                 if (code == KeyCode.SPACE || code == KeyCode.UP) {
+                    if (player.grounded) audio.playJump();
                     PhysicsFX.jump(player);
                     yield true;
                 }
@@ -79,6 +81,7 @@ public class GameFX {
                     if (player.canThrow()) {
                         player.performThrow();
                         throwTimer = 10;
+                        audio.playThrow();
                         obstacles.removeIf(o -> o.throwable() && PhysicsFX.inThrowRange(player, o));
                     }
                     yield true;
@@ -121,6 +124,7 @@ public class GameFX {
         if (era != oldEra) {
             particles.emitSparkle(PlayerFX.X + PlayerFX.WIDTH / 2,
                     player.y + PlayerFX.HEIGHT / 2, era.accentColor());
+            audio.playMilestone();
             transitionFromEra = oldEra;
             eraTransitionTicks = 30;
         }
@@ -148,6 +152,7 @@ public class GameFX {
                 particles.emitExplosion(PlayerFX.X + PlayerFX.WIDTH / 2,
                         player.y + PlayerFX.HEIGHT / 2);
                 screenShake.trigger(8.0f);
+                audio.playCollision();
                 state = State.GAME_OVER;
                 return;
             }

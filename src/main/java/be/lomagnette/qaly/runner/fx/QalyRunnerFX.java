@@ -23,6 +23,8 @@ public class QalyRunnerFX extends Application {
 
     @Override
     public void start(Stage stage) {
+        game.audio.init();
+
         var canvas = new Canvas(WIDTH, HEIGHT);
         var gc = canvas.getGraphicsContext2D();
 
