@@ -1,0 +1,14 @@
+[
+  {
+    "name": "be.lomagnette.qaly.runner.fx.QalyRunnerFX",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "be.lomagnette.qaly.runner.fx.MainFX",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  }
+]
