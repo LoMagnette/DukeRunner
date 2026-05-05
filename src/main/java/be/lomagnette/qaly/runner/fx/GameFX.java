@@ -26,6 +26,8 @@ public class GameFX {
     public ParticleSystem particles = new ParticleSystem();
     public ScreenShake screenShake = new ScreenShake();
     private SeasonFX previousEra = SeasonFX.JAVA_1;
+    public int eraTransitionTicks = 0;
+    public SeasonFX transitionFromEra = SeasonFX.JAVA_1;
 
     static final float BASE_SPEED = 1.5f;
     static final float SPEED_INCREMENT = 0.15f;
@@ -115,11 +117,14 @@ public class GameFX {
         SeasonFX oldEra = era;
         era = SeasonFX.forScore(score);
 
-        // Era change sparkle
+        // Era change sparkle + transition
         if (era != oldEra) {
             particles.emitSparkle(PlayerFX.X + PlayerFX.WIDTH / 2,
                     player.y + PlayerFX.HEIGHT / 2, era.accentColor());
+            transitionFromEra = oldEra;
+            eraTransitionTicks = 30;
         }
+        if (eraTransitionTicks > 0) eraTransitionTicks--;
 
         PhysicsFX.applyGravity(player);
         player.tickCooldown();

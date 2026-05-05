@@ -61,13 +61,18 @@ public final class RendererFX {
         // Parallax background (replaces flat sky)
         game.parallax.render(gc, game.era, w, h);
 
-        // Ground
+        // Ground with era transition blending
         double groundY = gameToScreenY(PhysicsFX.GROUND_Y, h);
-        gc.setFill(game.era.groundColor());
+        Color groundColor = game.era.groundColor();
+        if (game.eraTransitionTicks > 0) {
+            double t = (double) game.eraTransitionTicks / 30.0;
+            groundColor = groundColor.interpolate(game.transitionFromEra.groundColor(), t);
+        }
+        gc.setFill(groundColor);
         gc.fillRect(0, groundY, w, h - groundY);
 
         // Ground line
-        gc.setStroke(game.era.groundColor().brighter());
+        gc.setStroke(groundColor.brighter());
         gc.setLineWidth(2);
         gc.strokeLine(0, groundY, w, groundY);
 
