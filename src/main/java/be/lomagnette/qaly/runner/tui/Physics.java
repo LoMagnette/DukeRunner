@@ -1,4 +1,4 @@
-package be.lomagnette.qaly.runner;
+package be.lomagnette.qaly.runner.tui;
 
 public final class Physics {
     static final float GROUND_Y = 8.0f;

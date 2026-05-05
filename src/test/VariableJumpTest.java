@@ -1,5 +1,9 @@
 package be.lomagnette.qaly.runner;
 
+import be.lomagnette.qaly.runner.tui.Obstacle;
+import be.lomagnette.qaly.runner.tui.Physics;
+import be.lomagnette.qaly.runner.tui.Player;
+
 import static be.lomagnette.qaly.runner.TestRunner.*;
 
 public class VariableJumpTest {

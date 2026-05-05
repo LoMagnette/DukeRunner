@@ -1,4 +1,4 @@
-package be.lomagnette.qaly.runner;
+package be.lomagnette.qaly.runner.tui;
 
 public sealed abstract class Obstacle
         permits Obstacle.ConferenceStage, Obstacle.LaptopStack, Obstacle.CoffeeSpill, Obstacle.ConfusedIntern, Obstacle.SlowBuildServer {

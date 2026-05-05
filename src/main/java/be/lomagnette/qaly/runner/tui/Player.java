@@ -1,4 +1,4 @@
-package be.lomagnette.qaly.runner;
+package be.lomagnette.qaly.runner.tui;
 
 public class Player {
     static final float X = 18.0f;

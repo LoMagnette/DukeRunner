@@ -1,4 +1,4 @@
-package be.lomagnette.qaly.runner;
+package be.lomagnette.qaly.runner.tui;
 
 import dev.tamboui.tui.event.KeyEvent;
 

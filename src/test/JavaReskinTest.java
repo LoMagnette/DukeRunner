@@ -1,5 +1,6 @@
 package be.lomagnette.qaly.runner;
 
+import be.lomagnette.qaly.runner.tui.*;
 import dev.tamboui.style.Color;
 import static be.lomagnette.qaly.runner.TestRunner.*;
 

@@ -1,5 +1,5 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
-//JAVA 25
+//JAVA 26
 //DEPS dev.tamboui:tamboui-tui:LATEST
 //DEPS dev.tamboui:tamboui-widgets:LATEST
 //DEPS dev.tamboui:tamboui-panama-backend:LATEST
@@ -15,7 +15,7 @@
 //SOURCES Season.java
 //FILES META-INF/native-image/resource-config.json=resource-config.json
 
-package be.lomagnette.qaly.runner;
+package be.lomagnette.qaly.runner.tui;
 
 import dev.tamboui.tui.TuiConfig;
 import dev.tamboui.tui.TuiRunner;
@@ -25,7 +25,7 @@ import dev.tamboui.tui.event.TickEvent;
 
 import java.time.Duration;
 
-public class QalyRunner {
+public class DukeRunner {
 
     public static void main(String[] args) throws Exception {
         var config = TuiConfig.builder()
