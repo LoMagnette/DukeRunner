@@ -1,0 +1,13 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "com/sun/javafx/scene/control/skin/.*\\.css"},
+      {"pattern": "com/sun/javafx/tk/quantum/.*"},
+      {"pattern": "com/sun/glass/ui/.*"},
+      {"pattern": "com/sun/prism/.*"},
+      {"pattern": "javafx/.*\\.css"},
+      {"pattern": "com/sun/javafx/css/.*"},
+      {"pattern": "com/sun/javafx/font/.*"}
+    ]
+  }
+}

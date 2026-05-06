@@ -21,3 +21,12 @@
 # Secrets
 *.pem
 *.key
+
+# Build output
+out/
+MainFX
+Main
+
+# Native libraries
+*.so
+*.dylib
