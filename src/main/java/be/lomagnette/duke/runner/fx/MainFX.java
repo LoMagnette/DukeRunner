@@ -1,5 +1,5 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
-//JAVA 25
+//JAVA 26
 //DEPS org.openjfx:javafx-controls:25:${os.detected.jfxname}
 //DEPS org.openjfx:javafx-graphics:25:${os.detected.jfxname}
 //JAVA_OPTIONS --enable-native-access=ALL-UNNAMED

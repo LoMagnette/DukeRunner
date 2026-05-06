@@ -6,7 +6,7 @@
 
 # Code Conventions
 - Java 26, no framework — plain Java with libraries
-- Base package: `be.lomagnette.qaly.runner`
+- Base package: `be.lomagnette.duke.runner`
 - Use records for data carriers, sealed interfaces for domain types
 - Dependencies declared via `//DEPS` directives in source files
 - Multi-file projects use `//SOURCES` directives
