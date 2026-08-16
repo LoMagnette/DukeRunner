@@ -1,7 +1,5 @@
-package be.lomagnette.duke.runner;
+package be.lomagnette.duke.runner.fx;
 
-import be.lomagnette.duke.runner.fx.*;
-import be.lomagnette.qaly.runner.fx.*;
 import static be.lomagnette.duke.runner.TestRunner.*;
 
 public class JavaFXGameTest {

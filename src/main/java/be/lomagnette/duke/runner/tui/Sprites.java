@@ -17,8 +17,55 @@ public final class Sprites {
     // Duke = Java mascot: inverted teardrop blob (narrow pointed
     //   crown, wide round bottom), HUGE red nose bump, no eyes/mouth,
     //   thin noodle arms, tiny nub feet at bottom.
+    //
+    // All sprites are parsed once into immutable constants below and
+    // returned directly by the public accessors — the render loop runs
+    // at ~60 FPS, so re-parsing bitmaps every frame was pure GC churn.
 
-    public static CharSprite dukeRunning() {
+    private static final CharSprite DUKE_RUNNING = buildDukeRunning();
+    private static final CharSprite DUKE_RUNNING_B = buildDukeRunningB();
+    private static final CharSprite DUKE_JUMPING = buildDukeJumping();
+    private static final CharSprite DUKE_THROWING = buildDukeThrowing();
+    private static final CharSprite DUKE_SITTING = buildDukeSitting();
+
+    /** Run-cycle frame. {@code frame} alternates the nub feet to fake a stride. */
+    public static CharSprite dukeRunning(int frame) {
+        return (frame & 1) == 0 ? DUKE_RUNNING : DUKE_RUNNING_B;
+    }
+
+    public static CharSprite dukeRunning() { return DUKE_RUNNING; }
+    public static CharSprite dukeJumping() { return DUKE_JUMPING; }
+    public static CharSprite dukeThrowing() { return DUKE_THROWING; }
+    public static CharSprite dukeSitting() { return DUKE_SITTING; }
+
+    // Obstacle + decoration silhouettes, likewise parsed once.
+    private static final double[][] CONFERENCE_STAGE = buildConferenceStage();
+    private static final double[][] LAPTOP_STACK_WIDE = buildLaptopStackWide();
+    private static final double[][] LAPTOP_STACK_TALL = buildLaptopStackTall();
+    private static final double[][] COFFEE_SPILL = buildCoffeeSpill();
+    private static final double[][] CONFUSED_INTERN = buildConfusedIntern();
+    private static final double[][] SLOW_BUILD_SERVER = buildSlowBuildServer();
+    private static final double[][] COFFEE_CUP = buildCoffeeCup();
+    private static final double[][] TERMINAL = buildTerminal();
+    private static final double[][] GIT_BRANCH = buildGitBranch();
+    private static final double[][] IDE_ICON = buildIdeIcon();
+    private static final double[][] DOCKER_WHALE = buildDockerWhale();
+    private static final double[][] CLOUD = buildCloud();
+
+    public static double[][] conferenceStage() { return CONFERENCE_STAGE; }
+    public static double[][] laptopStackWide() { return LAPTOP_STACK_WIDE; }
+    public static double[][] laptopStackTall() { return LAPTOP_STACK_TALL; }
+    public static double[][] coffeeSpill() { return COFFEE_SPILL; }
+    public static double[][] confusedIntern() { return CONFUSED_INTERN; }
+    public static double[][] slowBuildServer() { return SLOW_BUILD_SERVER; }
+    public static double[][] coffeeCup() { return COFFEE_CUP; }
+    public static double[][] terminal() { return TERMINAL; }
+    public static double[][] gitBranch() { return GIT_BRANCH; }
+    public static double[][] ideIcon() { return IDE_ICON; }
+    public static double[][] dockerWhale() { return DOCKER_WHALE; }
+    public static double[][] cloud() { return CLOUD; }
+
+    private static CharSprite buildDukeRunning() {
         double[][] body = fromBitmap(
             "         ####                         ",  // crown tip
             "        ######                        ",  // crown widens fast
@@ -56,7 +103,46 @@ public final class Sprites {
         return new CharSprite(body, accent);
     }
 
-    public static CharSprite dukeJumping() {
+    // Second run frame: nub feet spread wider apart to fake a stride.
+    private static CharSprite buildDukeRunningB() {
+        double[][] body = fromBitmap(
+            "         ####                         ",  // crown tip
+            "        ######                        ",  // crown widens fast
+            "       ########                       ",  // head
+            "      ##########                      ",  // head wider
+            "     ############                     ",  // face
+            "    ##############                    ",  // face wider (14w)
+            "    ##################                ",  // nose bulge (18w)
+            "    ####################              ",  // nose peak (20w, widest!)
+            "    ##################                ",  // nose bulge (18w)
+            "    ##############                    ",  // below nose (14w)
+            "    ###############                   ",  // body (15w)
+            "   ################                   ",  // body (16w)
+            "   ################                   ",  // body
+            "   ################                   ",  // body
+            "   ################                   ",  // body
+            "   ################                   ",  // body
+            "   ################                   ",  // body
+            "   ################                   ",  // body
+            "   ################                   ",  // body (16w bottom)
+            "    ##############                    ",  // taper
+            "     ############                     ",  // taper
+            "      ##########                      ",  // rounding
+            "      ####    ####                    ",  // nub feet (spread)
+            "     ###        ###                   "   // nub tips (spread)
+        );
+        // Same red nose as the primary run frame (24 rows).
+        double[][] accent = {
+            {16, 18}, {17, 18},
+            {16, 17}, {17, 17}, {18, 17}, {19, 17}, {20, 17}, {21, 17},
+            {16, 16}, {17, 16}, {18, 16}, {19, 16}, {20, 16}, {21, 16}, {22, 16}, {23, 16},
+            {16, 15}, {17, 15}, {18, 15}, {19, 15}, {20, 15}, {21, 15},
+            {16, 14}, {17, 14}
+        };
+        return new CharSprite(body, accent);
+    }
+
+    private static CharSprite buildDukeJumping() {
         double[][] body = fromBitmap(
             "         ####                         ",  // crown tip
             "        ######                        ",  // crown
@@ -90,7 +176,7 @@ public final class Sprites {
         return new CharSprite(body, accent);
     }
 
-    public static CharSprite dukeThrowing() {
+    private static CharSprite buildDukeThrowing() {
         double[][] body = fromBitmap(
             "         ####                         ",  // crown tip
             "        ######                        ",  // crown
@@ -129,7 +215,7 @@ public final class Sprites {
     }
 
     // Title screen: front-facing Duke (~36w × 24h)
-    public static CharSprite dukeSitting() {
+    private static CharSprite buildDukeSitting() {
         double[][] body = fromBitmap(
             "              ##                      ",  // crown tip
             "             ####                     ",  // crown
@@ -171,7 +257,7 @@ public final class Sprites {
     // Using fromBitmap for precise, readable silhouettes.
 
     // Lectern/podium (6w × 26h)
-    public static double[][] conferenceStage() {
+    private static double[][] buildConferenceStage() {
         return fromBitmap(
             " #### ",  // podium top surface
             "######",  // lip
@@ -203,7 +289,7 @@ public final class Sprites {
     }
 
     // Three monitors on a desk (18w × 9h)
-    public static double[][] laptopStackWide() {
+    private static double[][] buildLaptopStackWide() {
         return fromBitmap(
             "  ##    ##    ##  ",  // screen tops
             " ####  ####  #### ",  // screens
@@ -218,7 +304,7 @@ public final class Sprites {
     }
 
     // Three laptops stacked vertically (8w × 25h)
-    public static double[][] laptopStackTall() {
+    private static double[][] buildLaptopStackTall() {
         return fromBitmap(
             "  ####  ",  // top laptop screen
             " ###### ",
@@ -249,7 +335,7 @@ public final class Sprites {
     }
 
     // Puddle on ground (22w × 6h)
-    public static double[][] coffeeSpill() {
+    private static double[][] buildCoffeeSpill() {
         return fromBitmap(
             "  ##################  ",  // top edge
             " #################### ",  // wider
@@ -261,7 +347,7 @@ public final class Sprites {
     }
 
     // Person silhouette with arms out (14w × 14h)
-    public static double[][] confusedIntern() {
+    private static double[][] buildConfusedIntern() {
         return fromBitmap(
             "     ####     ",  // head top
             "    ######    ",  // head
@@ -281,7 +367,7 @@ public final class Sprites {
     }
 
     // Server rack box (7w × 10h)
-    public static double[][] slowBuildServer() {
+    private static double[][] buildSlowBuildServer() {
         return fromBitmap(
             "#######",  // top frame
             "# ### #",  // drive bay
@@ -299,7 +385,7 @@ public final class Sprites {
     // ── Decorations (Java-themed, ~5w × 5-8h) ──────────────────
 
     // Coffee cup silhouette (~5w × 8h)
-    public static double[][] coffeeCup() {
+    private static double[][] buildCoffeeCup() {
         var pts = new ArrayList<double[]>();
         // Cup body
         fillRect(pts, 0, 0, 3, 4);
@@ -311,7 +397,7 @@ public final class Sprites {
     }
 
     // Terminal prompt >_ (~5w × 4h)
-    public static double[][] terminal() {
+    private static double[][] buildTerminal() {
         var pts = new ArrayList<double[]>();
         // > character
         dot(pts, 0, 3); dot(pts, 1, 2); dot(pts, 2, 1); dot(pts, 1, 0);
@@ -321,7 +407,7 @@ public final class Sprites {
     }
 
     // Git branch icon (~5w × 5h)
-    public static double[][] gitBranch() {
+    private static double[][] buildGitBranch() {
         var pts = new ArrayList<double[]>();
         // Main line (vertical)
         dot(pts, 1, 0); dot(pts, 1, 1); dot(pts, 1, 2); dot(pts, 1, 3); dot(pts, 1, 4);
@@ -334,7 +420,7 @@ public final class Sprites {
     }
 
     // IDE window/panel shape (~5w × 5h)
-    public static double[][] ideIcon() {
+    private static double[][] buildIdeIcon() {
         var pts = new ArrayList<double[]>();
         // Window frame
         fillRect(pts, 0, 0, 4, 4);
@@ -345,7 +431,7 @@ public final class Sprites {
     }
 
     // Docker whale shape (~5w × 4h)
-    public static double[][] dockerWhale() {
+    private static double[][] buildDockerWhale() {
         var pts = new ArrayList<double[]>();
         // Body
         dot(pts, 1, 0); dot(pts, 2, 0); dot(pts, 3, 0); dot(pts, 4, 0);
@@ -357,7 +443,7 @@ public final class Sprites {
     }
 
     // Cloud puff (~5w × 5h)
-    public static double[][] cloud() {
+    private static double[][] buildCloud() {
         var pts = new ArrayList<double[]>();
         dot(pts, 1, 0); dot(pts, 2, 0); dot(pts, 3, 0);
         dot(pts, 0, 1); dot(pts, 1, 1); dot(pts, 2, 1); dot(pts, 3, 1); dot(pts, 4, 1);

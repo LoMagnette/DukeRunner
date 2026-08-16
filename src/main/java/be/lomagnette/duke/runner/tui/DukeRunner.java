@@ -1,8 +1,12 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //JAVA 26
-//DEPS dev.tamboui:tamboui-tui:LATEST
-//DEPS dev.tamboui:tamboui-widgets:LATEST
-//DEPS dev.tamboui:tamboui-panama-backend:LATEST
+//REPOS mavencentral,snapshots=https://central.sonatype.com/repository/maven-snapshots
+//DEPS dev.tamboui:tamboui-tui:0.5.0-20260812.202257-6
+//DEPS dev.tamboui:tamboui-widgets:0.5.0-20260812.202257-6
+//DEPS dev.tamboui:tamboui-panama-backend:0.5.0-20260812.202257-6
+//DEPS dev.tamboui:tamboui-image:0.5.0-20260812.202257-6
+//DEPS dev.tamboui:tamboui-tfx:0.5.0-20260812.202257-6
+//DEPS dev.tamboui:tamboui-tfx-tui:0.5.0-20260812.202257-6
 //JAVA_OPTIONS --enable-native-access=ALL-UNNAMED
 //SOURCES Game.java
 //SOURCES Player.java
@@ -14,6 +18,7 @@
 //SOURCES Sprites.java
 //SOURCES Season.java
 //FILES META-INF/native-image/resource-config.json=resource-config.json
+//FILES bouvier.png=../../../../../../resources/bouvier.png
 
 package be.lomagnette.duke.runner.tui;
 
@@ -33,6 +38,7 @@ public class DukeRunner {
                 .build();
 
         var game = new Game();
+        var renderer = new Renderer();
 
         try (var tui = TuiRunner.create(config)) {
             tui.run(
@@ -49,7 +55,7 @@ public class DukeRunner {
                         case ResizeEvent r -> true;
                         default -> false;
                     },
-                    frame -> Renderer.render(frame, game)
+                    frame -> renderer.render(frame, game)
             );
         }
     }

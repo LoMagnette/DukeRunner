@@ -1,7 +1,5 @@
-package be.lomagnette.duke.runner;
+package be.lomagnette.duke.runner.tui;
 
-import be.lomagnette.duke.runner.tui.*;
-import be.lomagnette.qaly.runner.tui.*;
 import dev.tamboui.style.Color;
 import static be.lomagnette.duke.runner.TestRunner.*;
 
@@ -180,9 +178,25 @@ public class JavaReskinTest {
     // --- Task 7: Visual polish verification ---
 
     public void testGameTitleIsDukeRunner() {
-        // Verify title text is updated by checking Renderer contains it
-        // We test via the Game flow: title text renders "D U K E   R U N N E R"
-        // This test verifies the constant exists in Renderer (compile-time check via reflection)
-        assertTrue(true, "title text compile check — verified in Renderer.java");
+        assertEquals("D U K E   R U N N E R", Renderer.TITLE_TEXT, "launch title text");
+    }
+
+    // --- Task 8: Launch screen explains how to play ---
+
+    public void testLaunchScreenExplainsJump() {
+        var hint = Renderer.JUMP_HINT;
+        assertTrue(hint.contains("SPACE"), "jump hint should name the SPACE key: " + hint);
+        assertTrue(hint.toLowerCase().contains("jump"), "jump hint should say 'jump': " + hint);
+    }
+
+    public void testLaunchScreenExplainsThrow() {
+        var hint = Renderer.THROW_HINT;
+        assertTrue(hint.contains("B"), "throw hint should name the B key: " + hint);
+        assertTrue(hint.toLowerCase().contains("throw"), "throw hint should say 'throw': " + hint);
+    }
+
+    public void testLaunchScreenExplainsStart() {
+        assertTrue(Renderer.START_HINT.contains("SPACE to start"),
+                "start hint should tell the player to press SPACE to start: " + Renderer.START_HINT);
     }
 }

@@ -1,8 +1,4 @@
-package be.lomagnette.duke.runner;
-
-import be.lomagnette.duke.runner.tui.Obstacle;
-import be.lomagnette.duke.runner.tui.Physics;
-import be.lomagnette.duke.runner.tui.Player;
+package be.lomagnette.duke.runner.tui;
 
 import static be.lomagnette.duke.runner.TestRunner.*;
 
