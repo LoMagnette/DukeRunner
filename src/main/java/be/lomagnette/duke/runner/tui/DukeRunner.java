@@ -17,6 +17,9 @@
 //SOURCES Renderer.java
 //SOURCES Sprites.java
 //SOURCES Season.java
+//SOURCES Background.java
+//SOURCES Particles.java
+//SOURCES ScreenShake.java
 //FILES META-INF/native-image/resource-config.json=resource-config.json
 //FILES bouvier.png=../../../../../../resources/bouvier.png
 

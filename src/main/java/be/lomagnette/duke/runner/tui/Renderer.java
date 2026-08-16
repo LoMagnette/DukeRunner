@@ -56,6 +56,13 @@ public final class Renderer {
 
     private final long[] speedHistory = new long[SPEED_HISTORY];
     private final Random particleRng = new Random();
+    private final Background background = new Background();
+    private final Particles particles = new Particles();
+    private final ScreenShake shake = new ScreenShake();
+
+    // Edge-detection for event particles (fire once on the transition).
+    private boolean prevGrounded = true;
+    private boolean prevThrowActive;
 
     private Image titleImage;
     private boolean titleImageLoaded;
@@ -72,6 +79,10 @@ public final class Renderer {
         lastDtMs = lastNanos == 0 ? 16 : Math.max(1, Math.min(100, (now - lastNanos) / 1_000_000));
         lastNanos = now;
 
+        // View-only animation state advances every frame regardless of ticks.
+        particles.update(lastDtMs);
+        shake.tick();
+
         // Kick off a transition effect the frame the state changes.
         if (game.state != prevState) {
             switch (game.state) {
@@ -79,8 +90,17 @@ public final class Renderer {
                         ExpandDirection.HORIZONTAL,
                         Style.create().fg(Color.YELLOW).bold(),
                         650L, Interpolation.QuadOut);
-                case GAME_OVER -> gameOverFx = Fx.coalesce(650L, Interpolation.QuadOut);
-                case PLAYING -> { /* no intro effect */ }
+                case GAME_OVER -> {
+                    gameOverFx = Fx.coalesce(650L, Interpolation.QuadOut);
+                    shake.trigger(10f); // crash punch
+                }
+                case PLAYING -> {
+                    background.reset();
+                    particles.clear();
+                    shake.reset();
+                    prevGrounded = true;
+                    prevThrowActive = false;
+                }
             }
             prevState = game.state;
         }
@@ -330,19 +350,41 @@ public final class Renderer {
         Color horizon = Season.horizonColorFor(game.score);
         Color ground = Season.groundColorFor(game.score);
 
+        // Advance parallax and emit event particles only while playing so the
+        // scene freezes (but existing particles still settle) on game over.
+        if (game.state == Game.State.PLAYING) {
+            background.scroll(game.speed);
+            if (!prevGrounded && game.player.grounded) {
+                particles.emitDust(Player.X, Physics.GROUND_Y + 1, ground);
+            }
+            boolean throwActive = game.throwTimer > 0;
+            if (throwActive && !prevThrowActive) {
+                particles.emitSparks(Player.X + Player.WIDTH + 2,
+                        game.player.y + Player.HEIGHT, Color.YELLOW);
+            }
+            prevThrowActive = throwActive;
+            prevGrounded = game.player.grounded;
+        }
+
+        // Screen shake nudges the world within the fixed frame (bounds offset).
+        double sx = shake.offsetX();
+        double sy = shake.offsetY();
+
         var canvas = Canvas.builder()
-                .xBounds(0, cw)
-                .yBounds(0, ch)
+                .xBounds(-sx, cw - sx)
+                .yBounds(-sy, ch - sy)
                 .marker(Marker.BRAILLE)
                 .backgroundColor(sky)
                 .paint(ctx -> {
                     paintStars(ctx, cw, ch, horizon);
+                    background.render(ctx, cw, ch, Physics.GROUND_Y, game.score);
                     paintTerrain(ctx, cw, ground, horizon);
                     paintDecorations(ctx, game);
                     paintObstacles(ctx, game);
                     paintPlayer(ctx, game);
                     paintThrowEffect(ctx, game);
                     paintParticles(ctx, cw, ch, game.era, game.score);
+                    particles.render(ctx);
                 })
                 .build();
         frame.renderWidget(canvas, gameArea);
