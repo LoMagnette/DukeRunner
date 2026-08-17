@@ -139,7 +139,8 @@ public class JavaReskinTest {
     public void testCharSpriteRecord() {
         var duke = Sprites.dukeRunning();
         assertTrue(duke instanceof Sprites.CharSprite, "should be CharSprite");
-        assertTrue(duke.body().length > 0, "duke running should have body points");
+        assertTrue(duke.pointCount() > 0, "duke running should have points");
+        assertFalse(duke.layers().isEmpty(), "duke running should have color layers");
     }
 
     public void testDukeSpritesMethods() {
@@ -148,11 +149,18 @@ public class JavaReskinTest {
         var throwing = Sprites.dukeThrowing();
         var sitting = Sprites.dukeSitting();
 
-        assertTrue(running.body().length > 0, "running body");
-        assertTrue(jumping.body().length > 0, "jumping body");
-        assertTrue(throwing.body().length > 0, "throwing body");
-        assertTrue(sitting.body().length > 0, "sitting body");
-        assertTrue(throwing.accent().length > 0, "throwing should have accent (red nose)");
+        assertTrue(running.pointCount() > 0, "running points");
+        assertTrue(jumping.pointCount() > 0, "jumping points");
+        assertTrue(throwing.pointCount() > 0, "throwing points");
+        assertTrue(sitting.pointCount() > 0, "sitting points");
+        assertTrue(throwing.hasColor(Sprites.DUKE_NOSE), "throwing should have a red nose layer");
+    }
+
+    public void testDukeSpritesAreMultiColor() {
+        // The half-block overhaul gives Duke a palette: blue body + red nose at least.
+        var running = Sprites.dukeRunning();
+        assertTrue(running.hasColor(Sprites.DUKE_BODY), "running should have a blue body layer");
+        assertTrue(running.hasColor(Sprites.DUKE_NOSE), "running should have a red nose layer");
     }
 
     // --- Task 6: New obstacle + decoration sprite shapes ---

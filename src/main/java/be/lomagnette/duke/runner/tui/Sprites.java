@@ -1,16 +1,79 @@
 package be.lomagnette.duke.runner.tui;
 
+import dev.tamboui.style.Color;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class Sprites {
 
     private Sprites() {}
 
     // ── Character sprite data ─────────────────────────────────────
-    // Body (white) + accent (red nose), rendered as separate layers.
+    // A character sprite is a stack of colored layers, drawn back-to-front.
+    // Duke's palette: black head, white body, red nose.
 
-    public record CharSprite(double[][] body, double[][] accent) {}
+    public static final Color DUKE_HEAD = Color.rgb(22, 22, 26); // near-black
+    public static final Color DUKE_BODY = Color.rgb(240, 240, 245); // white
+    public static final Color DUKE_NOSE = Color.rgb(214, 74, 61); // red
+
+    /** One solid-color layer of a sprite. */
+    public record Layer(Color color, double[][] points) {}
+
+    /** A multi-layer colored sprite. */
+    public record CharSprite(List<Layer> layers) {
+        public int pointCount() {
+            int n = 0;
+            for (var l : layers) n += l.points().length;
+            return n;
+        }
+
+        public boolean hasColor(Color c) {
+            for (var l : layers) if (l.color().equals(c)) return true;
+            return false;
+        }
+    }
+
+    /**
+     * Split a mono silhouette into Duke's palette purely from geometry so every
+     * pose colors consistently without hand-painting each bitmap: the supplied
+     * {@code nose} points become the red layer, the top slice of what remains is
+     * the black head, and everything below is the white body. Layers are ordered
+     * back-to-front (nose drawn last, on top).
+     */
+    private static CharSprite colorize(double[][] silhouette, double[][] nose) {
+        double minY = Double.POSITIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        for (var p : silhouette) {
+            minY = Math.min(minY, p[1]);
+            maxY = Math.max(maxY, p[1]);
+        }
+        double height = Math.max(1, maxY - minY);
+        double headCut = maxY - height * 0.30; // top 30% → black head
+
+        Set<Long> noseKeys = new HashSet<>();
+        for (var p : nose) noseKeys.add(key(p[0], p[1]));
+
+        var body = new ArrayList<double[]>();
+        var head = new ArrayList<double[]>();
+        for (var p : silhouette) {
+            if (noseKeys.contains(key(p[0], p[1]))) continue; // owned by the nose layer
+            if (p[1] >= headCut) head.add(p);
+            else body.add(p);
+        }
+
+        var layers = new ArrayList<Layer>();
+        layers.add(new Layer(DUKE_BODY, toArray(body)));
+        layers.add(new Layer(DUKE_HEAD, toArray(head)));
+        layers.add(new Layer(DUKE_NOSE, nose));
+        return new CharSprite(layers);
+    }
+
+    private static long key(double x, double y) {
+        return (((long) Math.round(x)) << 20) ^ (long) Math.round(y);
+    }
 
     // ── Duke sprites (braille bitmaps, ~36w × 24h) ──────────────
     // '#' = lit dot. First row = top (highest y). Facing right.
@@ -100,7 +163,7 @@ public final class Sprites {
             {16, 15}, {17, 15}, {18, 15}, {19, 15}, {20, 15}, {21, 15},
             {16, 14}, {17, 14}
         };
-        return new CharSprite(body, accent);
+        return colorize(body, accent);
     }
 
     // Second run frame: nub feet spread wider apart to fake a stride.
@@ -139,7 +202,7 @@ public final class Sprites {
             {16, 15}, {17, 15}, {18, 15}, {19, 15}, {20, 15}, {21, 15},
             {16, 14}, {17, 14}
         };
-        return new CharSprite(body, accent);
+        return colorize(body, accent);
     }
 
     private static CharSprite buildDukeJumping() {
@@ -173,7 +236,7 @@ public final class Sprites {
             {16, 11}, {17, 11}, {18, 11}, {19, 11}, {20, 11}, {21, 11},
             {16, 10}, {17, 10}
         };
-        return new CharSprite(body, accent);
+        return colorize(body, accent);
     }
 
     private static CharSprite buildDukeThrowing() {
@@ -211,7 +274,7 @@ public final class Sprites {
             {16, 15}, {17, 15}, {18, 15}, {19, 15}, {20, 15}, {21, 15},
             {16, 14}, {17, 14}
         };
-        return new CharSprite(body, accent);
+        return colorize(body, accent);
     }
 
     // Title screen: front-facing Duke (~36w × 24h)
@@ -250,7 +313,7 @@ public final class Sprites {
             {11, 13}, {12, 13}, {13, 13}, {14, 13}, {15, 13}, {16, 13}, {17, 13}, {18, 13},
             {13, 12}, {14, 12}, {15, 12}, {16, 12}
         };
-        return new CharSprite(body, accent);
+        return colorize(body, accent);
     }
 
     // ── Obstacles (Java-themed, same collision dimensions) ────────

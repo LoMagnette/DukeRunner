@@ -218,18 +218,16 @@ public final class Renderer {
         var artCanvas = Canvas.builder()
                 .xBounds(0, cw)
                 .yBounds(0, ch)
-                .marker(Marker.BRAILLE)
+                .marker(Marker.HALF_BLOCK)
                 .paint(ctx -> {
                     var sitting = Sprites.dukeSitting();
                     double offsetX = Math.max(0, (cw - 38) / 2.0);
                     double offsetY = Math.max(0, (ch - 24) / 2.0);
-                    ctx.draw(Points.of(
-                            Sprites.translate(sitting.body(), offsetX, offsetY),
-                            Color.WHITE));
-                    if (sitting.accent().length > 0) {
+                    for (var layer : sitting.layers()) {
+                        if (layer.points().length == 0) continue;
                         ctx.draw(Points.of(
-                                Sprites.translate(sitting.accent(), offsetX, offsetY),
-                                Color.RED));
+                                Sprites.translate(layer.points(), offsetX, offsetY),
+                                layer.color()));
                     }
                 })
                 .build();
@@ -373,7 +371,7 @@ public final class Renderer {
         var canvas = Canvas.builder()
                 .xBounds(-sx, cw - sx)
                 .yBounds(-sy, ch - sy)
-                .marker(Marker.BRAILLE)
+                .marker(Marker.HALF_BLOCK)
                 .backgroundColor(sky)
                 .paint(ctx -> {
                     paintStars(ctx, cw, ch, horizon);
@@ -476,9 +474,9 @@ public final class Renderer {
         }
         double dx = Player.X - 10;
         double dy = game.player.y + bob;
-        ctx.draw(Points.of(Sprites.translate(sprite.body(), dx, dy), Color.WHITE));
-        if (sprite.accent().length > 0) {
-            ctx.draw(Points.of(Sprites.translate(sprite.accent(), dx, dy), Color.RED));
+        for (var layer : sprite.layers()) {
+            if (layer.points().length == 0) continue;
+            ctx.draw(Points.of(Sprites.translate(layer.points(), dx, dy), layer.color()));
         }
     }
 
