@@ -472,7 +472,12 @@ public final class Renderer {
             // Tiny vertical bob synced to the stride for a sense of gait.
             bob = (runFrame & 1) == 1 ? 1.0 : 0.0;
         }
-        double dx = Player.X - 10;
+        // Centre Duke's silhouette on the collision box [Player.X, Player.X+WIDTH].
+        // His body spans bitmap cols ~3–23 (centre ≈13); the box centre is
+        // Player.X + WIDTH/2 = 27, so dx = 27 - 13 = 14 = Player.X - 4. The old
+        // -10 drew him ~5 units left of his hitbox, so obstacles "hit" while
+        // still 2–3 cells away from the visible Duke.
+        double dx = Player.X + Player.WIDTH / 2 - 13;
         double dy = game.player.y + bob;
         for (var layer : sprite.layers()) {
             if (layer.points().length == 0) continue;
