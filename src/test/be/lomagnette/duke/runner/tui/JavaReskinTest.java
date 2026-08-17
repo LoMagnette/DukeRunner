@@ -166,12 +166,20 @@ public class JavaReskinTest {
     // --- Task 6: New obstacle + decoration sprite shapes ---
 
     public void testObstacleSpriteShapes() {
-        assertTrue(Sprites.conferenceStage().length > 0, "conference stage sprite");
-        assertTrue(Sprites.laptopStackWide().length > 0, "laptop stack wide sprite");
-        assertTrue(Sprites.laptopStackTall().length > 0, "laptop stack tall sprite");
-        assertTrue(Sprites.coffeeSpill().length > 0, "coffee spill sprite");
-        assertTrue(Sprites.confusedIntern().length > 0, "confused intern sprite");
-        assertTrue(Sprites.slowBuildServer().length > 0, "slow build server sprite");
+        assertTrue(Sprites.conferenceStage().pointCount() > 0, "conference stage sprite");
+        assertTrue(Sprites.laptopStackWide().pointCount() > 0, "laptop stack wide sprite");
+        assertTrue(Sprites.laptopStackTall().pointCount() > 0, "laptop stack tall sprite");
+        assertTrue(Sprites.coffeeSpill().pointCount() > 0, "coffee spill sprite");
+        assertTrue(Sprites.confusedIntern().pointCount() > 0, "confused intern sprite");
+        assertTrue(Sprites.slowBuildServer().pointCount() > 0, "slow build server sprite");
+    }
+
+    public void testObstaclesAreMultiColor() {
+        // Screens glow, servers have warning LEDs — each obstacle carries a
+        // recognizable accent color distinct from its frame.
+        assertTrue(Sprites.laptopStackWide().hasColor(Sprites.OBST_SCREEN), "monitors have green screens");
+        assertTrue(Sprites.slowBuildServer().hasColor(Sprites.OBST_LED), "server has warning LEDs");
+        assertTrue(Sprites.confusedIntern().hasColor(Sprites.OBST_SKIN), "intern has a skin-tone head");
     }
 
     public void testDecorationSpriteShapes() {

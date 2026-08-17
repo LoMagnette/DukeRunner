@@ -430,15 +430,17 @@ public final class Renderer {
                 case DOCKER_WHALE -> Color.CYAN;
                 case CLOUD -> Color.WHITE;
             };
+            // Decorations are background scenery — dim them so the bright,
+            // multi-color obstacles clearly read as the foreground hazards.
             ctx.draw(Points.of(
                     Sprites.translate(sprite, deco.x(), Physics.GROUND_Y + 1),
-                    color));
+                    darken(color, 0.45)));
         }
     }
 
     private void paintObstacles(Context ctx, Game game) {
         for (var obstacle : game.obstacles) {
-            double[][] sprite = switch (obstacle.type()) {
+            Sprites.CharSprite sprite = switch (obstacle.type()) {
                 case CONFERENCE_STAGE -> Sprites.conferenceStage();
                 case LAPTOP_STACK_WIDE -> Sprites.laptopStackWide();
                 case LAPTOP_STACK_TALL -> Sprites.laptopStackTall();
@@ -446,16 +448,12 @@ public final class Renderer {
                 case CONFUSED_INTERN -> Sprites.confusedIntern();
                 case SLOW_BUILD_SERVER -> Sprites.slowBuildServer();
             };
-            Color color = switch (obstacle.type()) {
-                case CONFERENCE_STAGE -> Color.rgb(139, 90, 43);
-                case LAPTOP_STACK_WIDE, LAPTOP_STACK_TALL -> Color.rgb(180, 180, 190);
-                case COFFEE_SPILL -> Color.rgb(139, 90, 43);
-                case CONFUSED_INTERN -> Color.WHITE;
-                case SLOW_BUILD_SERVER -> Color.rgb(100, 100, 110);
-            };
-            ctx.draw(Points.of(
-                    Sprites.translate(sprite, obstacle.x(), obstacle.bottomY()),
-                    color));
+            for (var layer : sprite.layers()) {
+                if (layer.points().length == 0) continue;
+                ctx.draw(Points.of(
+                        Sprites.translate(layer.points(), obstacle.x(), obstacle.bottomY()),
+                        layer.color()));
+            }
         }
     }
 

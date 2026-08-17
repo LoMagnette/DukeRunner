@@ -4,7 +4,9 @@ import dev.tamboui.style.Color;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class Sprites {
@@ -75,6 +77,52 @@ public final class Sprites {
         return (((long) Math.round(x)) << 20) ^ (long) Math.round(y);
     }
 
+    // ── Obstacle palette ──────────────────────────────────────────
+    // Bright, saturated "hazard" colors with an identifying detail per object
+    // (glowing screens, warning LEDs, a colored intern) so obstacles read as
+    // distinct foreground devices against the dimmed background scenery.
+
+    public static final Color OBST_FRAME = Color.rgb(58, 62, 72);    // dark device chassis
+    public static final Color OBST_SCREEN = Color.rgb(90, 220, 140);  // glowing terminal screen
+    public static final Color OBST_METAL = Color.rgb(184, 190, 202);  // brushed metal
+    public static final Color OBST_LED = Color.rgb(244, 92, 72);      // warning LED
+    public static final Color OBST_WOOD = Color.rgb(150, 100, 55);    // podium wood
+    public static final Color OBST_BRIGHT = Color.rgb(236, 232, 90);  // lectern panel / highlight
+    public static final Color OBST_COFFEE = Color.rgb(96, 60, 34);    // coffee (dark)
+    public static final Color OBST_COFFEE_LIGHT = Color.rgb(165, 110, 65); // coffee shine
+    public static final Color OBST_SKIN = Color.rgb(240, 200, 150);   // intern head
+    public static final Color OBST_SHIRT = Color.rgb(214, 74, 110);   // intern shirt
+
+    /**
+     * Parse a color bitmap into a layered sprite. Each non-space glyph is looked
+     * up in {@code palette}; unmapped glyphs fall back to the {@code '#'} entry.
+     * Points are grouped into one {@link Layer} per color, in first-seen order.
+     */
+    private static CharSprite fromPalette(Map<Character, Color> palette, String... rows) {
+        Map<Color, List<double[]>> byColor = new LinkedHashMap<>();
+        for (int i = 0; i < rows.length; i++) {
+            int y = rows.length - 1 - i; // first row = top = highest y
+            for (int x = 0; x < rows[i].length(); x++) {
+                char c = rows[i].charAt(x);
+                if (c == ' ') continue;
+                Color col = palette.getOrDefault(c, palette.get('#'));
+                if (col == null) continue;
+                byColor.computeIfAbsent(col, k -> new ArrayList<>()).add(new double[]{x, y});
+            }
+        }
+        var layers = new ArrayList<Layer>();
+        byColor.forEach((col, pts) -> layers.add(new Layer(col, toArray(pts))));
+        return new CharSprite(layers);
+    }
+
+    private static Map<Character, Color> palette(Object... pairs) {
+        var m = new LinkedHashMap<Character, Color>();
+        for (int i = 0; i < pairs.length; i += 2) {
+            m.put((Character) pairs[i], (Color) pairs[i + 1]);
+        }
+        return m;
+    }
+
     // ── Duke sprites (braille bitmaps, ~36w × 24h) ──────────────
     // '#' = lit dot. First row = top (highest y). Facing right.
     // Duke = Java mascot: inverted teardrop blob (narrow pointed
@@ -101,13 +149,13 @@ public final class Sprites {
     public static CharSprite dukeThrowing() { return DUKE_THROWING; }
     public static CharSprite dukeSitting() { return DUKE_SITTING; }
 
-    // Obstacle + decoration silhouettes, likewise parsed once.
-    private static final double[][] CONFERENCE_STAGE = buildConferenceStage();
-    private static final double[][] LAPTOP_STACK_WIDE = buildLaptopStackWide();
-    private static final double[][] LAPTOP_STACK_TALL = buildLaptopStackTall();
-    private static final double[][] COFFEE_SPILL = buildCoffeeSpill();
-    private static final double[][] CONFUSED_INTERN = buildConfusedIntern();
-    private static final double[][] SLOW_BUILD_SERVER = buildSlowBuildServer();
+    // Obstacles are layered color sprites; decorations stay mono silhouettes.
+    private static final CharSprite CONFERENCE_STAGE = buildConferenceStage();
+    private static final CharSprite LAPTOP_STACK_WIDE = buildLaptopStackWide();
+    private static final CharSprite LAPTOP_STACK_TALL = buildLaptopStackTall();
+    private static final CharSprite COFFEE_SPILL = buildCoffeeSpill();
+    private static final CharSprite CONFUSED_INTERN = buildConfusedIntern();
+    private static final CharSprite SLOW_BUILD_SERVER = buildSlowBuildServer();
     private static final double[][] COFFEE_CUP = buildCoffeeCup();
     private static final double[][] TERMINAL = buildTerminal();
     private static final double[][] GIT_BRANCH = buildGitBranch();
@@ -115,12 +163,12 @@ public final class Sprites {
     private static final double[][] DOCKER_WHALE = buildDockerWhale();
     private static final double[][] CLOUD = buildCloud();
 
-    public static double[][] conferenceStage() { return CONFERENCE_STAGE; }
-    public static double[][] laptopStackWide() { return LAPTOP_STACK_WIDE; }
-    public static double[][] laptopStackTall() { return LAPTOP_STACK_TALL; }
-    public static double[][] coffeeSpill() { return COFFEE_SPILL; }
-    public static double[][] confusedIntern() { return CONFUSED_INTERN; }
-    public static double[][] slowBuildServer() { return SLOW_BUILD_SERVER; }
+    public static CharSprite conferenceStage() { return CONFERENCE_STAGE; }
+    public static CharSprite laptopStackWide() { return LAPTOP_STACK_WIDE; }
+    public static CharSprite laptopStackTall() { return LAPTOP_STACK_TALL; }
+    public static CharSprite coffeeSpill() { return COFFEE_SPILL; }
+    public static CharSprite confusedIntern() { return CONFUSED_INTERN; }
+    public static CharSprite slowBuildServer() { return SLOW_BUILD_SERVER; }
     public static double[][] coffeeCup() { return COFFEE_CUP; }
     public static double[][] terminal() { return TERMINAL; }
     public static double[][] gitBranch() { return GIT_BRANCH; }
@@ -319,129 +367,129 @@ public final class Sprites {
     // ── Obstacles (Java-themed, same collision dimensions) ────────
     // Using fromBitmap for precise, readable silhouettes.
 
-    // Lectern/podium (6w × 26h)
-    private static double[][] buildConferenceStage() {
-        return fromBitmap(
-            " #### ",  // podium top surface
-            "######",  // lip
-            "######",
-            " #### ",  // front panel
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",
-            " #### ",  // panel bottom
-            "  ##  ",  // stem
-            "  ##  ",
-            "  ##  ",
-            "  ##  ",
-            "  ##  ",
-            " #### ",  // base widens
-            " #### ",
-            "######",  // base
-            "######",
-            "######"   // base bottom
+    // Lectern/podium (6w × 26h): wood body + a bright lectern panel on top.
+    private static CharSprite buildConferenceStage() {
+        return fromPalette(palette('W', OBST_WOOD, 'K', OBST_BRIGHT),
+            " KKKK ",  // podium top panel (bright)
+            "WWWWWW",  // lip
+            "WWWWWW",
+            " WWWW ",  // front panel
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",
+            " WWWW ",  // panel bottom
+            "  WW  ",  // stem
+            "  WW  ",
+            "  WW  ",
+            "  WW  ",
+            "  WW  ",
+            " WWWW ",  // base widens
+            " WWWW ",
+            "WWWWWW",  // base
+            "WWWWWW",
+            "WWWWWW"   // base bottom
         );
     }
 
-    // Three monitors on a desk (18w × 9h)
-    private static double[][] buildLaptopStackWide() {
-        return fromBitmap(
-            "  ##    ##    ##  ",  // screen tops
-            " ####  ####  #### ",  // screens
-            " ####  ####  #### ",
-            " ####  ####  #### ",  // screen bottoms
-            "##################",  // desk surface
-            "##################",
-            "##################",
-            "##################",
-            "##################"   // base
+    // Three monitors on a desk (18w × 9h): green screens in dark bezels on metal.
+    private static CharSprite buildLaptopStackWide() {
+        return fromPalette(palette('F', OBST_FRAME, 'S', OBST_SCREEN, 'M', OBST_METAL),
+            "  FF    FF    FF  ",  // screen tops
+            " FSSF  FSSF  FSSF ",  // screens (glow)
+            " FSSF  FSSF  FSSF ",
+            " FFFF  FFFF  FFFF ",  // screen bottoms
+            "MMMMMMMMMMMMMMMMMM",  // desk surface
+            "MMMMMMMMMMMMMMMMMM",
+            "MMMMMMMMMMMMMMMMMM",
+            "MMMMMMMMMMMMMMMMMM",
+            "MMMMMMMMMMMMMMMMMM"   // base
         );
     }
 
-    // Three laptops stacked vertically (8w × 25h)
-    private static double[][] buildLaptopStackTall() {
-        return fromBitmap(
-            "  ####  ",  // top laptop screen
-            " ###### ",
-            " ###### ",
-            " ###### ",
-            " ###### ",
-            "########",  // keyboard
-            "########",
+    // Three laptops stacked vertically (8w × 25h): green screens, metal keyboards.
+    private static CharSprite buildLaptopStackTall() {
+        return fromPalette(palette('S', OBST_SCREEN, 'M', OBST_METAL),
+            "  SSSS  ",  // top laptop screen
+            " SSSSSS ",
+            " SSSSSS ",
+            " SSSSSS ",
+            " SSSSSS ",
+            "MMMMMMMM",  // keyboard
+            "MMMMMMMM",
             "        ",  // gap
             "        ",
-            "  ####  ",  // middle laptop screen
-            " ###### ",
-            " ###### ",
-            " ###### ",
-            " ###### ",
-            "########",  // keyboard
-            "########",
+            "  SSSS  ",  // middle laptop screen
+            " SSSSSS ",
+            " SSSSSS ",
+            " SSSSSS ",
+            " SSSSSS ",
+            "MMMMMMMM",  // keyboard
+            "MMMMMMMM",
             "        ",  // gap
             "        ",
-            "  ####  ",  // bottom laptop screen
-            " ###### ",
-            " ###### ",
-            " ###### ",
-            " ###### ",
-            "########",  // keyboard
-            "########"   // base
+            "  SSSS  ",  // bottom laptop screen
+            " SSSSSS ",
+            " SSSSSS ",
+            " SSSSSS ",
+            " SSSSSS ",
+            "MMMMMMMM",  // keyboard
+            "MMMMMMMM"   // base
         );
     }
 
-    // Puddle on ground (22w × 6h)
-    private static double[][] buildCoffeeSpill() {
-        return fromBitmap(
-            "  ##################  ",  // top edge
-            " #################### ",  // wider
-            "######################",  // widest
-            "######################",  // widest
-            " #################### ",  // narrowing
-            "   ################   "   // base
+    // Puddle on ground (22w × 6h): dark coffee with a lighter shine on top.
+    private static CharSprite buildCoffeeSpill() {
+        return fromPalette(palette('C', OBST_COFFEE, 'H', OBST_COFFEE_LIGHT),
+            "  HHHHHHHHHHHHHHHHHH  ",  // top edge (shine)
+            " HHHHHHHHHHHHHHHHHHHH ",  // wider
+            "CCCCCCCCCCCCCCCCCCCCCC",  // widest
+            "CCCCCCCCCCCCCCCCCCCCCC",  // widest
+            " CCCCCCCCCCCCCCCCCCCC ",  // narrowing
+            "   CCCCCCCCCCCCCCCC   "   // base
         );
     }
 
-    // Person silhouette with arms out (14w × 14h)
-    private static double[][] buildConfusedIntern() {
-        return fromBitmap(
-            "     ####     ",  // head top
-            "    ######    ",  // head
-            "    ######    ",  // head
-            "     ####     ",  // chin
-            "      ##      ",  // neck
-            "  ##########  ",  // shoulders
-            "##############",  // arms extended wide
-            "##############",  // arms + torso
-            "  ##########  ",  // torso
-            "    ######    ",  // waist
-            "    ######    ",  // hips
-            "    ##  ##    ",  // legs
-            "    ##  ##    ",  // legs
-            "   ###  ###   "   // feet
+    // Person with arms out (14w × 14h): skin head, colored shirt.
+    private static CharSprite buildConfusedIntern() {
+        return fromPalette(palette('S', OBST_SKIN, 'T', OBST_SHIRT),
+            "     SSSS     ",  // head top
+            "    SSSSSS    ",  // head
+            "    SSSSSS    ",  // head
+            "     SSSS     ",  // chin
+            "      TT      ",  // neck
+            "  TTTTTTTTTT  ",  // shoulders
+            "TTTTTTTTTTTTTT",  // arms extended wide
+            "TTTTTTTTTTTTTT",  // arms + torso
+            "  TTTTTTTTTT  ",  // torso
+            "    TTTTTT    ",  // waist
+            "    TTTTTT    ",  // hips
+            "    TT  TT    ",  // legs
+            "    TT  TT    ",  // legs
+            "   TTT  TTT   "   // feet
         );
     }
 
-    // Server rack box (7w × 10h)
-    private static double[][] buildSlowBuildServer() {
-        return fromBitmap(
-            "#######",  // top frame
-            "# ### #",  // drive bay
-            "#     #",  // empty slot
-            "# ### #",  // drive bay
-            "#     #",  // empty slot
-            "# ### #",  // drive bay
-            "#     #",  // empty slot
-            "# ### #",  // drive bay
-            "#######",  // bottom frame
-            "#######"   // base
+    // Server rack (7w × 10h): dark chassis with warning-LED drive bays.
+    private static CharSprite buildSlowBuildServer() {
+        return fromPalette(palette('F', OBST_FRAME, 'L', OBST_LED),
+            "FFFFFFF",  // top frame
+            "F LLL F",  // drive bay (lit)
+            "F     F",  // empty slot
+            "F LLL F",  // drive bay
+            "F     F",  // empty slot
+            "F LLL F",  // drive bay
+            "F     F",  // empty slot
+            "F LLL F",  // drive bay
+            "FFFFFFF",  // bottom frame
+            "FFFFFFF"   // base
         );
     }
 
