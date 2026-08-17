@@ -86,12 +86,16 @@ public final class Sprites {
     public static final Color OBST_SCREEN = Color.rgb(90, 220, 140);  // glowing terminal screen
     public static final Color OBST_METAL = Color.rgb(184, 190, 202);  // brushed metal
     public static final Color OBST_LED = Color.rgb(244, 92, 72);      // warning LED
-    public static final Color OBST_WOOD = Color.rgb(150, 100, 55);    // podium wood
-    public static final Color OBST_BRIGHT = Color.rgb(236, 232, 90);  // lectern panel / highlight
+    public static final Color OBST_NEON = Color.rgb(96, 214, 232);    // cyan glow / code / eyes
     public static final Color OBST_COFFEE = Color.rgb(96, 60, 34);    // coffee (dark)
     public static final Color OBST_COFFEE_LIGHT = Color.rgb(165, 110, 65); // coffee shine
-    public static final Color OBST_SKIN = Color.rgb(240, 200, 150);   // intern head
-    public static final Color OBST_SHIRT = Color.rgb(214, 74, 110);   // intern shirt
+    public static final Color OBST_CUP = Color.rgb(232, 234, 240);    // paper coffee cup
+    public static final Color OBST_BUG_BODY = Color.rgb(198, 60, 70); // beetle shell
+    public static final Color OBST_BUG_DARK = Color.rgb(48, 44, 58);  // legs / seam
+    public static final Color OBST_WOOD = Color.rgb(134, 92, 54);     // podium wood body
+    public static final Color OBST_BRIGHT = Color.rgb(238, 210, 120); // lit lectern panel
+    public static final Color OBST_SKIN = Color.rgb(232, 190, 158);   // intern skin
+    public static final Color OBST_SHIRT = Color.rgb(84, 138, 210);   // intern shirt
 
     /**
      * Parse a color bitmap into a layered sprite. Each non-space glyph is looked
