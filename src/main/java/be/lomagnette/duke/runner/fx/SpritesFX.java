@@ -26,30 +26,41 @@ public final class SpritesFX {
     private static Image coffeeSpillImg, confusedInternImg, slowBuildServerImg;
     private static Image coffeeCupImg, terminalImg, gitBranchImg, ideIconImg, dockerWhaleImg, cloudImg;
 
-    // --- Duke sprites (body=white teardrop, nose=red circle) ---
+    // --- Duke sprites ---
+    // Duke = the Java mascot (see src/main/resources/duke.png): a big solid
+    // BLACK pointed cone for the head/body, a glossy RED nose low-centre with a
+    // white glint, a WHITE belly below it, thin black arms akimbo, and a wavy
+    // two-foot skirt. Poses are generated parametrically by dukeGrid() (a char
+    // grid, black='B' white='W' red='R' glint='H') and rasterised by imageFromGrid().
+
+    private static final Color DUKE_BLACK = Color.rgb(20, 20, 24);
+    private static final Color DUKE_BODY = Color.rgb(246, 246, 250);
+    private static final Color DUKE_NOSE = Color.rgb(183, 26, 62);
+    private static final Color DUKE_GLINT = Color.WHITE;
+    private enum Pose { SIT, RUN_A, RUN_B, JUMP, THROW }
 
     public static Image dukeRunning() {
-        if (dukeRunningImg == null) dukeRunningImg = buildDuke(false, false, false);
+        if (dukeRunningImg == null) dukeRunningImg = buildDuke(Pose.RUN_A, 54, 66);
         return dukeRunningImg;
     }
 
     public static Image dukeRunning2() {
-        if (dukeRunning2Img == null) dukeRunning2Img = buildDuke(false, false, true);
+        if (dukeRunning2Img == null) dukeRunning2Img = buildDuke(Pose.RUN_B, 54, 66);
         return dukeRunning2Img;
     }
 
     public static Image dukeJumping() {
-        if (dukeJumpingImg == null) dukeJumpingImg = buildDuke(true, false, false);
+        if (dukeJumpingImg == null) dukeJumpingImg = buildDuke(Pose.JUMP, 54, 66);
         return dukeJumpingImg;
     }
 
     public static Image dukeThrowing() {
-        if (dukeThrowingImg == null) dukeThrowingImg = buildDuke(false, true, false);
+        if (dukeThrowingImg == null) dukeThrowingImg = buildDuke(Pose.THROW, 54, 66);
         return dukeThrowingImg;
     }
 
     public static Image dukeSitting() {
-        if (dukeSittingImg == null) dukeSittingImg = buildDukeSitting();
+        if (dukeSittingImg == null) dukeSittingImg = buildDuke(Pose.SIT, 72, 84);
         return dukeSittingImg;
     }
 
@@ -137,134 +148,188 @@ public final class SpritesFX {
 
     // --- Builder helpers ---
 
-    private static Image buildDuke(boolean jumping, boolean throwing, boolean altFrame) {
-        int w = 54, h = 72;
+    /** Rasterise a Duke pose into a w×h transparent-backed image. */
+    private static Image buildDuke(Pose pose, int w, int h) {
+        // Title mascot faces front; the in-game run/jump/throw poses are profile.
+        char[][] g = pose == Pose.SIT ? dukeGridFront(pose, w, h) : dukeGridProfile(pose, w, h);
         var img = new WritableImage(w, h);
         var pw = img.getPixelWriter();
-
-        // Body: inverted teardrop (narrow top, wide bottom)
-        // Top portion is black (crown), lower portion is white (body)
-        int centerX = w / 2 - (throwing ? 3 : 0);
-        double crownEnd = 0.35;
-
         for (int y = 0; y < h; y++) {
-            double progress = (double) y / h;
-            int radius;
-            if (progress < 0.1) {
-                radius = (int)(2 + progress * 80); // crown tip
-            } else if (progress < 0.4) {
-                radius = (int)(10 + (progress - 0.1) * 40); // widening head
-            } else {
-                radius = (int)(22 - (progress - 0.4) * 8); // body narrows slightly to bottom
-                if (jumping && progress > 0.85) radius = (int)(radius * 0.7); // tucked
-            }
-
-            Color bodyColor = progress < crownEnd ? Color.BLACK : Color.WHITE;
-
-            // Feet gap
-            if (!jumping && progress > 0.9) {
-                for (int x = centerX - radius; x <= centerX + radius; x++) {
-                    if (x >= 0 && x < w) {
-                        int footGap = (int)(w * 0.06);
-                        if (Math.abs(x - centerX) < footGap) continue;
-                        int offset = altFrame ? 2 : 0;
-                        if (x < centerX) {
-                            pw.setColor(x - offset, y, bodyColor);
-                        } else {
-                            pw.setColor(Math.min(x + offset, w - 1), y, bodyColor);
-                        }
-                    }
-                }
-            } else {
-                for (int x = centerX - radius; x <= centerX + radius; x++) {
-                    if (x >= 0 && x < w) pw.setColor(x, y, bodyColor);
-                }
+            for (int x = 0; x < w; x++) {
+                Color c = switch (g[y][x]) {
+                    case 'B' -> DUKE_BLACK;
+                    case 'W' -> DUKE_BODY;
+                    case 'R' -> DUKE_NOSE;
+                    case 'H' -> DUKE_GLINT;
+                    default -> null;
+                };
+                if (c != null) pw.setColor(x, y, c);
             }
         }
-
-        // Red nose: oval on right side of face
-        int noseX = centerX + 10;
-        int noseY = (int)(h * 0.3);
-        fillOval(pw, noseX, noseY, 8, 5, Color.RED, w, h);
-
-        // Hands
-        int handY = (int)(h * 0.55);
-        int bodyRadiusAtHand = (int)(22 - (0.55 - 0.4) * 8);
-        if (throwing) {
-            // Left hand
-            fillOval(pw, centerX - bodyRadiusAtHand - 5, handY, 4, 3, Color.WHITE, w, h);
-            // Throwing arm
-            for (int i = 0; i < 15; i++) {
-                int ax = centerX + 18 + i;
-                int ay = (int)(h * 0.5) + (i / 3);
-                if (ax < w && ay < h) {
-                    pw.setColor(ax, ay, Color.WHITE);
-                    if (ay + 1 < h) pw.setColor(ax, ay + 1, Color.WHITE);
-                    if (ay + 2 < h) pw.setColor(ax, ay + 2, Color.WHITE);
-                }
-            }
-            // Hand at end of throwing arm
-            int throwHandX = Math.min(centerX + 33, w - 5);
-            int throwHandY = (int)(h * 0.5) + 4;
-            fillOval(pw, throwHandX, throwHandY, 4, 3, Color.WHITE, w, h);
-        } else if (jumping) {
-            // Hands raised to the sides
-            fillOval(pw, centerX - bodyRadiusAtHand - 5, handY - 6, 4, 3, Color.WHITE, w, h);
-            fillOval(pw, centerX + bodyRadiusAtHand + 5, handY - 6, 4, 3, Color.WHITE, w, h);
-        } else {
-            // Running: hands swing with animation
-            int swing = altFrame ? 4 : -4;
-            fillOval(pw, centerX - bodyRadiusAtHand - 5, handY + swing, 4, 3, Color.WHITE, w, h);
-            fillOval(pw, centerX + bodyRadiusAtHand + 5, handY - swing, 4, 3, Color.WHITE, w, h);
-        }
-
         return img;
     }
 
-    private static Image buildDukeSitting() {
-        int w = 70, h = 80;
-        var img = new WritableImage(w, h);
-        var pw = img.getPixelWriter();
+    /**
+     * Front-facing Duke on a w×h char grid from the mascot's geometry: a solid
+     * black cone tapering to the crown, a white belly inset below the nose, a
+     * glossy red nose with a glint, thin black arms akimbo, and a wavy skirt that
+     * splits into two feet. Used for the title; in-game poses use the profile.
+     * Row 0 is the crown (top).
+     */
+    private static char[][] dukeGridFront(Pose pose, int w, int h) {
+        double cx = (w - 1) / 2.0;
+        char[][] g = new char[h][w];
+        for (char[] row : g) java.util.Arrays.fill(row, ' ');
 
-        int centerX = w / 2;
-        double crownEnd = 0.35;
+        int coneBase = (int)(h * 0.58);
+        double maxHW = w * 0.40;
+        int noseCy = (int)(h * 0.46);
+        double noseRx = w * 0.16, noseRy = h * 0.12;
+        double outline = Math.max(1.5, w * 0.07);
+        boolean glint = w >= 36;
+        int footTop = (int)(h * (pose == Pose.JUMP ? 0.70 : 0.74));
+        double shallow = h * 0.80;
+        double deep = pose == Pose.JUMP ? h * 0.86 : h - 1;
+        double lean = pose == Pose.RUN_A ? -0.35 : pose == Pose.RUN_B ? 0.35 : 0.0;
+        double armR = Math.max(1.5, w * 0.07);
 
+        java.util.function.DoubleUnaryOperator hwAt = y ->
+                y <= coneBase ? maxHW * Math.pow(y / (double) coneBase, 0.72) : maxHW - (y - coneBase) * 0.15;
+        java.util.function.DoubleUnaryOperator bottomAt = d -> {
+            double u = Math.max(-1, Math.min(1, d / maxHW));
+            double base = shallow + (deep - shallow) * (1 - Math.cos(2 * Math.PI * u)) / 2;
+            return base + lean * (deep - shallow) * Math.sin(Math.PI * u);
+        };
+
+        // 1) Solid black silhouette (cone + wavy skirt).
         for (int y = 0; y < h; y++) {
-            double progress = (double) y / h;
-            int radius;
-            if (progress < 0.08) {
-                radius = (int)(2 + progress * 100);
-            } else if (progress < 0.35) {
-                radius = (int)(10 + (progress - 0.08) * 60);
-            } else {
-                radius = (int)(26 - (progress - 0.35) * 10);
-                if (progress > 0.9) {
-                    // Feet
-                    for (int x = centerX - radius; x <= centerX + radius; x++) {
-                        if (x >= 0 && x < w && Math.abs(x - centerX) > 4) {
-                            pw.setColor(x, y, Color.WHITE);
-                        }
-                    }
-                    continue;
-                }
-            }
-
-            Color bodyColor = progress < crownEnd ? Color.BLACK : Color.WHITE;
-            for (int x = centerX - radius; x <= centerX + radius; x++) {
-                if (x >= 0 && x < w) pw.setColor(x, y, bodyColor);
+            double hw = hwAt.applyAsDouble(y);
+            for (int x = (int) Math.round(cx - hw); x <= cx + hw; x++) {
+                if (x < 0 || x >= w) continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx)) continue;
+                g[y][x] = 'B';
             }
         }
+        // 2) White belly inset below the nose.
+        for (int y = noseCy; y < h; y++) {
+            double hw = hwAt.applyAsDouble(y) - outline;
+            for (int x = (int) Math.round(cx - hw); x <= cx + hw; x++) {
+                if (x < 0 || x >= w || g[y][x] != 'B') continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx) - outline) continue;
+                g[y][x] = 'W';
+            }
+        }
+        // 3) Arms.
+        switch (pose) {
+            case THROW -> {
+                dukeArm(g, cx, h, -1, maxHW, armR);
+                thickLine(g, cx + maxHW - 2, h * 0.56, cx + maxHW + 6, h * 0.50, armR, 'B');
+            }
+            case JUMP -> {
+                thickLine(g, cx - maxHW + 2, h * 0.58, cx - maxHW - 4, h * 0.46, armR, 'B');
+                thickLine(g, cx + maxHW - 2, h * 0.58, cx + maxHW + 4, h * 0.46, armR, 'B');
+            }
+            default -> {
+                dukeArm(g, cx, h, -1, maxHW, armR);
+                dukeArm(g, cx, h, +1, maxHW, armR);
+            }
+        }
+        // 4) Glossy red nose with a glint.
+        oval(g, cx, noseCy, noseRx, noseRy, 'R');
+        if (glint) oval(g, cx - noseRx * 0.4, noseCy - noseRy * 0.45, noseRx * 0.3, noseRy * 0.34, 'H');
+        return g;
+    }
 
-        // Centered nose
-        fillOval(pw, centerX, (int)(h * 0.35), 10, 7, Color.RED, w, h);
+    private static void dukeArm(char[][] g, double cx, int h, int s, double maxHW, double r) {
+        thickLine(g, cx + s * (maxHW - 2), h * 0.56, cx + s * (maxHW + 3), h * 0.68, r, 'B');
+        thickLine(g, cx + s * (maxHW + 3), h * 0.68, cx + s * (maxHW - 3), h * 0.80, r, 'B');
+    }
 
-        // Hands resting at sides
-        int handY = (int)(h * 0.55);
-        int bodyRadiusAtHand = (int)(26 - (0.55 - 0.35) * 10);
-        fillOval(pw, centerX - bodyRadiusAtHand - 5, handY, 5, 4, Color.WHITE, w, h);
-        fillOval(pw, centerX + bodyRadiusAtHand + 5, handY, 5, 4, Color.WHITE, w, h);
+    /**
+     * Side-facing Duke for the in-game poses — nose leading right so he faces the
+     * oncoming obstacles. The cone leans forward, the front (right) edge is fuller
+     * than the flatter back, and the nose protrudes from the leading edge. Feet
+     * are static; motion comes from the renderer's small vertical bob.
+     */
+    private static char[][] dukeGridProfile(Pose pose, int w, int h) {
+        double cx = (w - 1) / 2.0;
+        char[][] g = new char[h][w];
+        for (char[] row : g) java.util.Arrays.fill(row, ' ');
 
-        return img;
+        int coneBase = (int)(h * 0.56);
+        double maxHW = w * 0.36, lean = w * 0.14;
+        int noseCy = (int)(h * 0.44);
+        double noseRx = w * 0.15, noseRy = h * 0.13;
+        double outline = Math.max(1.5, w * 0.07);
+        boolean glint = w >= 36;                    // glint only survives at high res
+        int footTop = (int)(h * (pose == Pose.JUMP ? 0.70 : 0.74));
+        double shallow = h * 0.80;
+        double deep = pose == Pose.JUMP ? h * 0.86 : h - 1;
+
+        java.util.function.DoubleUnaryOperator axisAt = y ->
+                y <= coneBase ? cx + lean * (1 - y / (double) coneBase) : cx;
+        // Slightly convex cone so the crown isn't a razor-thin tip.
+        java.util.function.DoubleUnaryOperator hwAt = y ->
+                y <= coneBase ? maxHW * Math.pow(y / (double) coneBase, 0.72) : maxHW - (y - coneBase) * 0.10;
+        java.util.function.DoubleUnaryOperator frontHW = y -> hwAt.applyAsDouble(y) * 1.12;
+        java.util.function.DoubleUnaryOperator backHW = y -> hwAt.applyAsDouble(y) * 0.82;
+        // Wavy skirt bottom: two symmetric feet (no stride tilt).
+        java.util.function.DoubleUnaryOperator bottomAt = d -> {
+            double u = Math.max(-1, Math.min(1, d / maxHW));
+            return shallow + (deep - shallow) * (1 - Math.cos(2 * Math.PI * u)) / 2;
+        };
+
+        // 1) Black silhouette (leaning cone + wavy skirt).
+        for (int y = 0; y < h; y++) {
+            double axis = axisAt.applyAsDouble(y);
+            double front = axis + frontHW.applyAsDouble(y), back = axis - backHW.applyAsDouble(y);
+            for (int x = (int) Math.round(back); x <= front; x++) {
+                if (x < 0 || x >= w) continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx)) continue;
+                g[y][x] = 'B';
+            }
+        }
+        // 2) White belly (inset from the outline).
+        for (int y = noseCy; y < h; y++) {
+            double axis = axisAt.applyAsDouble(y);
+            double front = axis + frontHW.applyAsDouble(y) - outline, back = axis - backHW.applyAsDouble(y) + outline;
+            for (int x = (int) Math.round(back); x <= front; x++) {
+                if (x < 0 || x >= w || g[y][x] != 'B') continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx) - outline) continue;
+                g[y][x] = 'W';
+            }
+        }
+        // 3) Arm — only where it reads outside the body (thrust / lift).
+        double frontEdge = axisAt.applyAsDouble((int)(h * 0.50)) + frontHW.applyAsDouble((int)(h * 0.50));
+        if (pose == Pose.THROW) {
+            thickLine(g, frontEdge - 2, h * 0.54, frontEdge + 6, h * 0.44, outline, 'B');
+        } else if (pose == Pose.JUMP) {
+            thickLine(g, frontEdge - 2, h * 0.52, frontEdge + 4, h * 0.40, outline, 'B');
+        }
+        // 4) Nose on the leading edge, with a glint.
+        double nAxis = axisAt.applyAsDouble(noseCy);
+        double nx = nAxis + frontHW.applyAsDouble(noseCy) - noseRx * 0.4;
+        oval(g, nx, noseCy, noseRx, noseRy, 'R');
+        if (glint) oval(g, nx - noseRx * 0.35, noseCy - noseRy * 0.4, noseRx * 0.3, noseRy * 0.34, 'H');
+        return g;
+    }
+
+    private static void oval(char[][] g, double cx, double cy, double rx, double ry, char c) {
+        int h = g.length, w = g[0].length;
+        for (int y = (int)(cy - ry); y <= cy + ry; y++)
+            for (int x = (int)(cx - rx); x <= cx + rx; x++) {
+                if (x < 0 || x >= w || y < 0 || y >= h) continue;
+                double dx = (x - cx) / rx, dy = (y - cy) / ry;
+                if (dx * dx + dy * dy <= 1.0) g[y][x] = c;
+            }
+    }
+
+    private static void thickLine(char[][] g, double x0, double y0, double x1, double y1, double r, char c) {
+        int steps = (int)(Math.hypot(x1 - x0, y1 - y0) * 3) + 1;
+        for (int i = 0; i <= steps; i++) {
+            double t = i / (double) steps;
+            oval(g, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, r, r, c);
+        }
     }
 
     private static Image buildRect(int w, int h, Color fill, Color border) {

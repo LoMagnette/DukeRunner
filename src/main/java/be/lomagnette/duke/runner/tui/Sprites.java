@@ -3,11 +3,9 @@ package be.lomagnette.duke.runner.tui;
 import dev.tamboui.style.Color;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public final class Sprites {
 
@@ -15,11 +13,23 @@ public final class Sprites {
 
     // ── Character sprite data ─────────────────────────────────────
     // A character sprite is a stack of colored layers, drawn back-to-front.
-    // Duke's palette: black head, white body, red nose.
+    // Duke = the Java mascot (see src/main/resources/duke.png): a big solid
+    // BLACK pointed cone for the head/body, a large glossy RED nose low-centre,
+    // a WHITE belly below it, thin black arms akimbo, and a wavy two-foot skirt.
+    // Poses are generated parametrically by dukeGrid() and coloured from this
+    // palette, so every frame stays on-model.
 
-    public static final Color DUKE_HEAD = Color.rgb(22, 22, 26); // near-black
-    public static final Color DUKE_BODY = Color.rgb(240, 240, 245); // white
-    public static final Color DUKE_NOSE = Color.rgb(214, 74, 61); // red
+    public static final Color DUKE_BLACK = Color.rgb(20, 20, 24);    // cone / arms / outline
+    public static final Color DUKE_BODY = Color.rgb(246, 246, 250);  // white belly
+    public static final Color DUKE_NOSE = Color.rgb(183, 26, 62);    // crimson nose
+    public static final Color DUKE_GLINT = Color.rgb(255, 255, 255); // highlight on the nose
+
+    // Duke sprite grid size (game/canvas units). The whole figure — arms and
+    // feet included — fits in DUKE_W × DUKE_H; DUKE_CX is the horizontal centre
+    // the renderer aligns to Duke's collision box.
+    public static final int DUKE_W = 24;
+    public static final int DUKE_H = 28;
+    public static final double DUKE_CX = (DUKE_W - 1) / 2.0;
 
     /** One solid-color layer of a sprite. */
     public record Layer(Color color, double[][] points) {}
@@ -38,43 +48,218 @@ public final class Sprites {
         }
     }
 
+    /** Duke's poses. Each maps to the same base figure with different legs/arms. */
+    public enum Pose { SIT, RUN_A, RUN_B, JUMP, THROW }
+
+    // Cell glyphs used by the generated Duke grid.
+    private static final char BLK = 'B', WHT = 'W', RED = 'R', GLT = 'H';
+
     /**
-     * Split a mono silhouette into Duke's palette purely from geometry so every
-     * pose colors consistently without hand-painting each bitmap: the supplied
-     * {@code nose} points become the red layer, the top slice of what remains is
-     * the black head, and everything below is the white body. Layers are ordered
-     * back-to-front (nose drawn last, on top).
+     * Front-facing Duke on a {@link #DUKE_W}×{@link #DUKE_H} grid straight from
+     * the mascot's geometry (see duke.png): a solid black cone tapering to the
+     * crown, a white belly inset below the nose, a glossy red nose with a glint,
+     * thin black arms akimbo, and a wavy skirt that splits into two feet. Used
+     * for the title mascot; the in-game poses use {@link #dukeGridProfile}.
+     * Grid row 0 is the crown (top).
      */
-    private static CharSprite colorize(double[][] silhouette, double[][] nose) {
-        double minY = Double.POSITIVE_INFINITY;
-        double maxY = Double.NEGATIVE_INFINITY;
-        for (var p : silhouette) {
-            minY = Math.min(minY, p[1]);
-            maxY = Math.max(maxY, p[1]);
+    private static char[][] dukeGridFront(Pose pose) {
+        int w = DUKE_W, h = DUKE_H;
+        double cx = DUKE_CX;
+        char[][] g = new char[h][w];
+        for (char[] row : g) java.util.Arrays.fill(row, ' ');
+
+        int coneBase = (int) (h * 0.58);        // cone tip → shoulders
+        double maxHW = w * 0.40;                 // half-width at the shoulders
+        int noseCy = (int) (h * 0.46);
+        double noseRx = w * 0.16, noseRy = h * 0.12;
+        double outline = Math.max(1.5, w * 0.07); // black frame around the belly
+        boolean glint = w >= 36;                   // glint only survives at high res
+        int footTop = (int) (h * (pose == Pose.JUMP ? 0.70 : 0.74));
+        double shallow = h * 0.80;                 // skirt bottom at notch / corners
+        double deep = pose == Pose.JUMP ? h * 0.86 : h - 1; // feet tuck up on jump
+        double lean = pose == Pose.RUN_A ? -0.35 : pose == Pose.RUN_B ? 0.35 : 0.0;
+
+        // Outer silhouette half-width by row: a slightly convex cone (so the tip
+        // isn't a 1-pixel antenna once downsampled), then a skirt.
+        java.util.function.DoubleUnaryOperator hwAt = y ->
+                y <= coneBase ? maxHW * Math.pow(y / (double) coneBase, 0.72) : maxHW - (y - coneBase) * 0.15;
+        // Lowest skirt row for a signed offset from centre: a wave with two deep
+        // feet (|u|≈0.5) and a shallow notch/corners (u=0,±1), tilted by lean.
+        java.util.function.DoubleUnaryOperator bottomAt = d -> {
+            double u = Math.max(-1, Math.min(1, d / maxHW));
+            double base = shallow + (deep - shallow) * (1 - Math.cos(2 * Math.PI * u)) / 2;
+            return base + lean * (deep - shallow) * Math.sin(Math.PI * u);
+        };
+
+        // 1) Solid black silhouette (cone above, wavy skirt below).
+        for (int y = 0; y < h; y++) {
+            double hw = hwAt.applyAsDouble(y);
+            for (int x = (int) Math.round(cx - hw); x <= cx + hw; x++) {
+                if (x < 0 || x >= w) continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx)) continue;
+                g[y][x] = BLK;
+            }
         }
-        double height = Math.max(1, maxY - minY);
-        double headCut = maxY - height * 0.30; // top 30% → black head
-
-        Set<Long> noseKeys = new HashSet<>();
-        for (var p : nose) noseKeys.add(key(p[0], p[1]));
-
-        var body = new ArrayList<double[]>();
-        var head = new ArrayList<double[]>();
-        for (var p : silhouette) {
-            if (noseKeys.contains(key(p[0], p[1]))) continue; // owned by the nose layer
-            if (p[1] >= headCut) head.add(p);
-            else body.add(p);
+        // 2) White belly: interior below the nose, inset from the black outline.
+        for (int y = noseCy; y < h; y++) {
+            double hw = hwAt.applyAsDouble(y) - outline;
+            for (int x = (int) Math.round(cx - hw); x <= cx + hw; x++) {
+                if (x < 0 || x >= w || g[y][x] != BLK) continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx) - outline) continue;
+                g[y][x] = WHT;
+            }
         }
-
-        var layers = new ArrayList<Layer>();
-        layers.add(new Layer(DUKE_BODY, toArray(body)));
-        layers.add(new Layer(DUKE_HEAD, toArray(head)));
-        layers.add(new Layer(DUKE_NOSE, nose));
-        return new CharSprite(layers);
+        // 3) Arms.
+        double armR = Math.max(1.5, w * 0.07);
+        switch (pose) {
+            case THROW -> { // left hand on hip, right arm thrust forward
+                dukeArm(g, -1, maxHW, armR);
+                thickLine(g, cx + maxHW - 2, h * 0.56, cx + maxHW + 6, h * 0.50, armR, BLK);
+            }
+            case JUMP -> { // both arms flung outward/up
+                thickLine(g, cx - maxHW + 2, h * 0.58, cx - maxHW - 4, h * 0.46, armR, BLK);
+                thickLine(g, cx + maxHW - 2, h * 0.58, cx + maxHW + 4, h * 0.46, armR, BLK);
+            }
+            default -> { // akimbo
+                dukeArm(g, -1, maxHW, armR);
+                dukeArm(g, +1, maxHW, armR);
+            }
+        }
+        // 4) Glossy red nose with a white glint on its upper-left.
+        oval(g, cx, noseCy, noseRx, noseRy, RED);
+        if (glint) oval(g, cx - noseRx * 0.4, noseCy - noseRy * 0.45, noseRx * 0.3, noseRy * 0.34, GLT);
+        return g;
     }
 
-    private static long key(double x, double y) {
-        return (((long) Math.round(x)) << 20) ^ (long) Math.round(y);
+    /** One akimbo arm: down-out to the elbow, then back in to the hip. */
+    private static void dukeArm(char[][] g, int s, double maxHW, double r) {
+        double cx = DUKE_CX, h = DUKE_H;
+        thickLine(g, cx + s * (maxHW - 2), h * 0.56, cx + s * (maxHW + 3), h * 0.68, r, BLK);
+        thickLine(g, cx + s * (maxHW + 3), h * 0.68, cx + s * (maxHW - 3), h * 0.80, r, BLK);
+    }
+
+    /**
+     * Side-facing Duke used for the in-game poses — nose leading to the right so
+     * he clearly faces the oncoming obstacles. Same black-cone / red-nose /
+     * white-belly build as the front view, but the cone leans forward and the
+     * front (right) edge is fuller than the flatter back, with the big nose
+     * protruding from the leading edge. Feet are static (a faked leg-stride read
+     * as jitter at this resolution); the sense of motion comes from the small
+     * vertical bob the renderer applies. JUMP tucks the feet; THROW thrusts an arm.
+     */
+    private static char[][] dukeGridProfile(Pose pose) {
+        int w = DUKE_W, h = DUKE_H;
+        double cx = DUKE_CX;
+        char[][] g = new char[h][w];
+        for (char[] row : g) java.util.Arrays.fill(row, ' ');
+
+        int coneBase = (int) (h * 0.56);
+        double maxHW = w * 0.36;
+        double lean = w * 0.14;                    // cone tip leans forward (right)
+        int noseCy = (int) (h * 0.44);
+        double noseRx = w * 0.15, noseRy = h * 0.13;
+        double outline = Math.max(1.5, w * 0.07);
+        boolean glint = w >= 36;                   // glint only survives at high res
+        int footTop = (int) (h * (pose == Pose.JUMP ? 0.70 : 0.74));
+        double shallow = h * 0.80;
+        double deep = pose == Pose.JUMP ? h * 0.86 : h - 1;
+
+        java.util.function.DoubleUnaryOperator axisAt = y ->
+                y <= coneBase ? cx + lean * (1 - y / (double) coneBase) : cx;
+        // Slightly convex cone: widens fast near the crown so the tip isn't a
+        // 1-pixel "antenna" once the terminal downsamples it.
+        java.util.function.DoubleUnaryOperator hwAt = y ->
+                y <= coneBase ? maxHW * Math.pow(y / (double) coneBase, 0.72) : maxHW - (y - coneBase) * 0.10;
+        java.util.function.DoubleUnaryOperator frontHW = y -> hwAt.applyAsDouble(y) * 1.12;
+        java.util.function.DoubleUnaryOperator backHW = y -> hwAt.applyAsDouble(y) * 0.82;
+        // Wavy skirt bottom: two symmetric feet (no stride tilt).
+        java.util.function.DoubleUnaryOperator bottomAt = d -> {
+            double u = Math.max(-1, Math.min(1, d / maxHW));
+            return shallow + (deep - shallow) * (1 - Math.cos(2 * Math.PI * u)) / 2;
+        };
+
+        // 1) Black silhouette (leaning cone + wavy skirt).
+        for (int y = 0; y < h; y++) {
+            double axis = axisAt.applyAsDouble(y);
+            double front = axis + frontHW.applyAsDouble(y), back = axis - backHW.applyAsDouble(y);
+            for (int x = (int) Math.round(back); x <= front; x++) {
+                if (x < 0 || x >= w) continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx)) continue;
+                g[y][x] = BLK;
+            }
+        }
+        // 2) White belly (inset from the outline).
+        for (int y = noseCy; y < h; y++) {
+            double axis = axisAt.applyAsDouble(y);
+            double front = axis + frontHW.applyAsDouble(y) - outline, back = axis - backHW.applyAsDouble(y) + outline;
+            for (int x = (int) Math.round(back); x <= front; x++) {
+                if (x < 0 || x >= w || g[y][x] != BLK) continue;
+                if (y >= footTop && y > bottomAt.applyAsDouble(x - cx) - outline) continue;
+                g[y][x] = WHT;
+            }
+        }
+        // 3) Arm — only where it reads outside the body (thrust / lift); the run
+        //    cycle is carried by the striding feet, so no arm over the belly.
+        double frontEdge = axisAt.applyAsDouble((int) (h * 0.50)) + frontHW.applyAsDouble((int) (h * 0.50));
+        if (pose == Pose.THROW) {
+            thickLine(g, frontEdge - 2, h * 0.54, frontEdge + 6, h * 0.44, outline, BLK);
+        } else if (pose == Pose.JUMP) {
+            thickLine(g, frontEdge - 2, h * 0.52, frontEdge + 4, h * 0.40, outline, BLK);
+        }
+        // 4) Nose on the leading edge, with a glint.
+        double nAxis = axisAt.applyAsDouble(noseCy);
+        double nx = nAxis + frontHW.applyAsDouble(noseCy) - noseRx * 0.4;
+        oval(g, nx, noseCy, noseRx, noseRy, RED);
+        if (glint) oval(g, nx - noseRx * 0.35, noseCy - noseRy * 0.4, noseRx * 0.3, noseRy * 0.34, GLT);
+        return g;
+    }
+
+    private static void oval(char[][] g, double cx, double cy, double rx, double ry, char c) {
+        int h = g.length, w = g[0].length;
+        for (int y = (int) (cy - ry); y <= cy + ry; y++)
+            for (int x = (int) (cx - rx); x <= cx + rx; x++) {
+                if (x < 0 || x >= w || y < 0 || y >= h) continue;
+                double dx = (x - cx) / rx, dy = (y - cy) / ry;
+                if (dx * dx + dy * dy <= 1.0) g[y][x] = c;
+            }
+    }
+
+    private static void thickLine(char[][] g, double x0, double y0, double x1, double y1, double r, char c) {
+        int steps = (int) (Math.hypot(x1 - x0, y1 - y0) * 3) + 1;
+        for (int i = 0; i <= steps; i++) {
+            double t = i / (double) steps;
+            oval(g, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, r, r, c);
+        }
+    }
+
+    /** Colour a generated Duke grid into layered points (row 0 = top). */
+    private static CharSprite dukeSprite(Pose pose) {
+        // Title mascot faces front; the in-game run/jump/throw poses are profile.
+        char[][] g = pose == Pose.SIT ? dukeGridFront(pose) : dukeGridProfile(pose);
+        int h = g.length;
+        var black = new ArrayList<double[]>();
+        var white = new ArrayList<double[]>();
+        var red = new ArrayList<double[]>();
+        var glint = new ArrayList<double[]>();
+        for (int i = 0; i < h; i++) {
+            int y = h - 1 - i; // first row = top = highest y
+            for (int x = 0; x < g[i].length; x++) {
+                switch (g[i][x]) {
+                    case BLK -> black.add(new double[]{x, y});
+                    case WHT -> white.add(new double[]{x, y});
+                    case RED -> red.add(new double[]{x, y});
+                    case GLT -> glint.add(new double[]{x, y});
+                    default -> { }
+                }
+            }
+        }
+        // Non-overlapping layers, so draw order is only cosmetic.
+        var layers = new ArrayList<Layer>();
+        layers.add(new Layer(DUKE_BODY, toArray(white)));
+        layers.add(new Layer(DUKE_BLACK, toArray(black)));
+        layers.add(new Layer(DUKE_NOSE, toArray(red)));
+        layers.add(new Layer(DUKE_GLINT, toArray(glint)));
+        return new CharSprite(layers);
     }
 
     // ── Obstacle palette ──────────────────────────────────────────
@@ -127,23 +312,18 @@ public final class Sprites {
         return m;
     }
 
-    // ── Duke sprites (braille bitmaps, ~36w × 24h) ──────────────
-    // '#' = lit dot. First row = top (highest y). Facing right.
-    // Duke = Java mascot: inverted teardrop blob (narrow pointed
-    //   crown, wide round bottom), HUGE red nose bump, no eyes/mouth,
-    //   thin noodle arms, tiny nub feet at bottom.
-    //
-    // All sprites are parsed once into immutable constants below and
-    // returned directly by the public accessors — the render loop runs
-    // at ~60 FPS, so re-parsing bitmaps every frame was pure GC churn.
+    // ── Duke sprites ────────────────────────────────────────────
+    // Generated once from dukeGrid()/dukeSprite() into immutable constants and
+    // returned directly by the accessors — the render loop runs at ~60 FPS, so
+    // rebuilding the poses every frame would be pure GC churn.
 
-    private static final CharSprite DUKE_RUNNING = buildDukeRunning();
-    private static final CharSprite DUKE_RUNNING_B = buildDukeRunningB();
-    private static final CharSprite DUKE_JUMPING = buildDukeJumping();
-    private static final CharSprite DUKE_THROWING = buildDukeThrowing();
-    private static final CharSprite DUKE_SITTING = buildDukeSitting();
+    private static final CharSprite DUKE_RUNNING = dukeSprite(Pose.RUN_A);
+    private static final CharSprite DUKE_RUNNING_B = dukeSprite(Pose.RUN_B);
+    private static final CharSprite DUKE_JUMPING = dukeSprite(Pose.JUMP);
+    private static final CharSprite DUKE_THROWING = dukeSprite(Pose.THROW);
+    private static final CharSprite DUKE_SITTING = dukeSprite(Pose.SIT);
 
-    /** Run-cycle frame. {@code frame} alternates the nub feet to fake a stride. */
+    /** Run-cycle frame. {@code frame} alternates the stride to fake running. */
     public static CharSprite dukeRunning(int frame) {
         return (frame & 1) == 0 ? DUKE_RUNNING : DUKE_RUNNING_B;
     }
@@ -180,196 +360,8 @@ public final class Sprites {
     public static double[][] dockerWhale() { return DOCKER_WHALE; }
     public static double[][] cloud() { return CLOUD; }
 
-    private static CharSprite buildDukeRunning() {
-        double[][] body = fromBitmap(
-            "         ####                         ",  // crown tip
-            "        ######                        ",  // crown widens fast
-            "       ########                       ",  // head
-            "      ##########                      ",  // head wider
-            "     ############                     ",  // face
-            "    ##############                    ",  // face wider (14w)
-            "    ##################                ",  // nose bulge (18w)
-            "    ####################              ",  // nose peak (20w, widest!)
-            "    ##################                ",  // nose bulge (18w)
-            "    ##############                    ",  // below nose (14w)
-            "    ###############                   ",  // body (15w)
-            "   ################                   ",  // body (16w)
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body (16w bottom)
-            "    ##############                    ",  // taper
-            "     ############                     ",  // taper
-            "      ##########                      ",  // rounding
-            "       ####  ####                     ",  // nub feet
-            "       ###    ###                     "   // nub tips
-        );
-        // Nose: fully red oval on right side (rows 5-9)
-        double[][] accent = {
-            {16, 18}, {17, 18},
-            {16, 17}, {17, 17}, {18, 17}, {19, 17}, {20, 17}, {21, 17},
-            {16, 16}, {17, 16}, {18, 16}, {19, 16}, {20, 16}, {21, 16}, {22, 16}, {23, 16},
-            {16, 15}, {17, 15}, {18, 15}, {19, 15}, {20, 15}, {21, 15},
-            {16, 14}, {17, 14}
-        };
-        return colorize(body, accent);
-    }
-
-    // Second run frame: nub feet spread wider apart to fake a stride.
-    private static CharSprite buildDukeRunningB() {
-        double[][] body = fromBitmap(
-            "         ####                         ",  // crown tip
-            "        ######                        ",  // crown widens fast
-            "       ########                       ",  // head
-            "      ##########                      ",  // head wider
-            "     ############                     ",  // face
-            "    ##############                    ",  // face wider (14w)
-            "    ##################                ",  // nose bulge (18w)
-            "    ####################              ",  // nose peak (20w, widest!)
-            "    ##################                ",  // nose bulge (18w)
-            "    ##############                    ",  // below nose (14w)
-            "    ###############                   ",  // body (15w)
-            "   ################                   ",  // body (16w)
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body (16w bottom)
-            "    ##############                    ",  // taper
-            "     ############                     ",  // taper
-            "      ##########                      ",  // rounding
-            "      ####    ####                    ",  // nub feet (spread)
-            "     ###        ###                   "   // nub tips (spread)
-        );
-        // Same red nose as the primary run frame (24 rows).
-        double[][] accent = {
-            {16, 18}, {17, 18},
-            {16, 17}, {17, 17}, {18, 17}, {19, 17}, {20, 17}, {21, 17},
-            {16, 16}, {17, 16}, {18, 16}, {19, 16}, {20, 16}, {21, 16}, {22, 16}, {23, 16},
-            {16, 15}, {17, 15}, {18, 15}, {19, 15}, {20, 15}, {21, 15},
-            {16, 14}, {17, 14}
-        };
-        return colorize(body, accent);
-    }
-
-    private static CharSprite buildDukeJumping() {
-        double[][] body = fromBitmap(
-            "         ####                         ",  // crown tip
-            "        ######                        ",  // crown
-            "       ########                       ",  // head
-            "      ##########                      ",  // head wider
-            "     ############                     ",  // face
-            "    ##############                    ",  // face wider (14w)
-            "    ##################                ",  // nose bulge (18w)
-            "    ####################              ",  // nose peak (20w)
-            "    ##################                ",  // nose bulge (18w)
-            "    ##############                    ",  // below nose (14w)
-            "    ###############                   ",  // body (15w)
-            "   ################                   ",  // body (16w)
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body (16w)
-            "    ##############                    ",  // taper
-            "     ############                     ",  // compact
-            "     ######  ######                   ",  // tucked nubs
-            "      #####  #####                    "   // tucked nubs
-        );
-        // Nose accent (20 rows → row 5 = y14)
-        double[][] accent = {
-            {16, 14}, {17, 14},
-            {16, 13}, {17, 13}, {18, 13}, {19, 13}, {20, 13}, {21, 13},
-            {16, 12}, {17, 12}, {18, 12}, {19, 12}, {20, 12}, {21, 12}, {22, 12}, {23, 12},
-            {16, 11}, {17, 11}, {18, 11}, {19, 11}, {20, 11}, {21, 11},
-            {16, 10}, {17, 10}
-        };
-        return colorize(body, accent);
-    }
-
-    private static CharSprite buildDukeThrowing() {
-        double[][] body = fromBitmap(
-            "         ####                         ",  // crown tip
-            "        ######                        ",  // crown
-            "       ########                       ",  // head
-            "      ##########                      ",  // head wider
-            "     ############                     ",  // face
-            "    ##############                    ",  // face wider (14w)
-            "    ##################                ",  // nose bulge (18w)
-            "    ####################              ",  // nose peak (20w)
-            "    ##################                ",  // nose bulge (18w)
-            "    ##############                    ",  // below nose (14w)
-            "    ###############                   ",  // body (15w)
-            "   ################                   ",  // body (16w)
-            "   ################  ###              ",  // body + arm start
-            "   ################   ####            ",  // body + arm extending
-            "   ################    ####           ",  // body + hand
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body
-            "   ################                   ",  // body (16w bottom)
-            "    ##############                    ",  // taper
-            "     ############                     ",  // taper
-            "      ##########                      ",  // rounding
-            "       ####  ####                     ",  // nub feet
-            "       ###    ###                     "   // nub tips
-        );
-        // Same nose as running (24 rows)
-        double[][] accent = {
-            {16, 18}, {17, 18},
-            {16, 17}, {17, 17}, {18, 17}, {19, 17}, {20, 17}, {21, 17},
-            {16, 16}, {17, 16}, {18, 16}, {19, 16}, {20, 16}, {21, 16}, {22, 16}, {23, 16},
-            {16, 15}, {17, 15}, {18, 15}, {19, 15}, {20, 15}, {21, 15},
-            {16, 14}, {17, 14}
-        };
-        return colorize(body, accent);
-    }
-
-    // Title screen: front-facing Duke (~36w × 24h)
-    private static CharSprite buildDukeSitting() {
-        double[][] body = fromBitmap(
-            "              ##                      ",  // crown tip
-            "             ####                     ",  // crown
-            "            ######                    ",  // head
-            "           ########                   ",  // head wider
-            "          ##########                  ",  // face
-            "         ############                 ",  // face wider
-            "        ##############                ",  // face widest
-            "       ################               ",  // upper body
-            "      ##################              ",  // nose area
-            "      ##################              ",  // nose center
-            "      ##################              ",  // nose area
-            "     ####################             ",  // body wider
-            "     ####################             ",  // body
-            "    ######################            ",  // body widest
-            "    ######################            ",  // body
-            "    ######################            ",  // body
-            "    ######################            ",  // body
-            "    ######################            ",  // wide bottom
-            "    ######################            ",  // wide at bottom!
-            "     ####################             ",  // taper
-            "      ##################              ",  // taper
-            "       ######    ######               ",  // nub feet
-            "        #####    #####                ",  // nubs
-            "        ####      ####                "   // nub tips
-        );
-        // Big centered nose oval (front view)
-        double[][] accent = {
-            {13, 16}, {14, 16}, {15, 16}, {16, 16},
-            {11, 15}, {12, 15}, {13, 15}, {14, 15}, {15, 15}, {16, 15}, {17, 15}, {18, 15},
-            {10, 14}, {11, 14}, {12, 14}, {13, 14}, {14, 14}, {15, 14}, {16, 14}, {17, 14}, {18, 14}, {19, 14},
-            {11, 13}, {12, 13}, {13, 13}, {14, 13}, {15, 13}, {16, 13}, {17, 13}, {18, 13},
-            {13, 12}, {14, 12}, {15, 12}, {16, 12}
-        };
-        return colorize(body, accent);
-    }
-
     // ── Obstacles (Java-themed, same collision dimensions) ────────
-    // Using fromBitmap for precise, readable silhouettes.
+    // Using fromPalette for precise, readable multi-color silhouettes.
 
     // Lectern/podium (6w × 26h): wood body + a bright lectern panel on top.
     private static CharSprite buildConferenceStage() {
@@ -568,20 +560,6 @@ public final class Sprites {
     }
 
     // ── Utilities ─────────────────────────────────────────────────
-
-    /** Parse a visual bitmap into braille dot coordinates. '#' = lit dot. */
-    private static double[][] fromBitmap(String... rows) {
-        var pts = new ArrayList<double[]>();
-        for (int i = 0; i < rows.length; i++) {
-            int y = rows.length - 1 - i; // first row = top = highest y
-            for (int x = 0; x < rows[i].length(); x++) {
-                if (rows[i].charAt(x) == '#') {
-                    pts.add(new double[]{x, y});
-                }
-            }
-        }
-        return pts.toArray(new double[0][]);
-    }
 
     public static double[][] translate(double[][] sprite, double dx, double dy) {
         var result = new double[sprite.length][2];

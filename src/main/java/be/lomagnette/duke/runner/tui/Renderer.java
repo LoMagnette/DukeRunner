@@ -21,6 +21,7 @@ import dev.tamboui.widgets.block.Block;
 import dev.tamboui.widgets.block.BorderType;
 import dev.tamboui.widgets.block.Borders;
 import dev.tamboui.widgets.block.Title;
+import dev.tamboui.widgets.Clear;
 import dev.tamboui.widgets.canvas.Canvas;
 import dev.tamboui.widgets.canvas.Context;
 import dev.tamboui.widgets.canvas.Marker;
@@ -106,6 +107,13 @@ public final class Renderer {
         }
 
         var area = frame.area();
+
+        // Tamboui diffs against the previous frame and only repaints changed
+        // cells, so any cell a state leaves untouched keeps its old content.
+        // The title/resize screens don't paint their whole area, which let a
+        // previous game's HUD and playfield bleed through. Clear every frame so
+        // each state starts from a blank buffer.
+        frame.renderWidget(Clear.clear(), area);
 
         // Check minimum terminal size
         if (area.width() < 80 || area.height() < 24) {
@@ -221,8 +229,8 @@ public final class Renderer {
                 .marker(Marker.HALF_BLOCK)
                 .paint(ctx -> {
                     var sitting = Sprites.dukeSitting();
-                    double offsetX = Math.max(0, (cw - 38) / 2.0);
-                    double offsetY = Math.max(0, (ch - 24) / 2.0);
+                    double offsetX = Math.max(0, (cw - Sprites.DUKE_W) / 2.0);
+                    double offsetY = Math.max(0, (ch - Sprites.DUKE_H) / 2.0);
                     for (var layer : sitting.layers()) {
                         if (layer.points().length == 0) continue;
                         ctx.draw(Points.of(
@@ -470,12 +478,10 @@ public final class Renderer {
             // Tiny vertical bob synced to the stride for a sense of gait.
             bob = (runFrame & 1) == 1 ? 1.0 : 0.0;
         }
-        // Centre Duke's silhouette on the collision box [Player.X, Player.X+WIDTH].
-        // His body spans bitmap cols ~3–23 (centre ≈13); the box centre is
-        // Player.X + WIDTH/2 = 27, so dx = 27 - 13 = 14 = Player.X - 4. The old
-        // -10 drew him ~5 units left of his hitbox, so obstacles "hit" while
-        // still 2–3 cells away from the visible Duke.
-        double dx = Player.X + Player.WIDTH / 2 - 13;
+        // Centre Duke's grid on the collision box [Player.X, Player.X+WIDTH]:
+        // align the grid's centre column (DUKE_CX) with the box centre so the
+        // visible Duke and his hitbox coincide.
+        double dx = Player.X + Player.WIDTH / 2 - Sprites.DUKE_CX;
         double dy = game.player.y + bob;
         for (var layer : sprite.layers()) {
             if (layer.points().length == 0) continue;
