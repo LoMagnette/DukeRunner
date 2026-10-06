@@ -10,8 +10,7 @@
 # JBang
 .jbang/
 
-# Java
-*.class
+# Javagit s
 *.jar
 
 # Environment
