@@ -4,7 +4,7 @@ public class Player {
     public static final float X = 18.0f;
     public static final float WIDTH = 18.0f;
     static final float HEIGHT = 16.0f;
-    public static final int THROW_COOLDOWN_TICKS = 60; // ~2 seconds at 30fps
+    public static final int THROW_COOLDOWN_TICKS = 60; // ~1 second at the 16ms (~60fps) tick rate
 
     float y;
     float verticalVelocity;

@@ -23,8 +23,8 @@ jbang run src/main/java/be/lomagnette/duke/runner/fx/MainFX.java
 
 | Key | Action |
 |-----|--------|
-| `Space` / `↑` | Jump (hold for higher jump) |
-| `Shift` | Throw |
+| `Space` / `↑` | Jump |
+| `B` / `↓` | Throw (`throw new Exception()` at nearby foes) |
 | `Q` | Quit |
 
 Jump over obstacles. The game speeds up and changes Java era every few hundred points.

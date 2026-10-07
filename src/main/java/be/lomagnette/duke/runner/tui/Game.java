@@ -67,7 +67,6 @@ public class Game {
                     if (player.canThrow()) {
                         player.performThrow();
                         throwTimer = 10;
-                        System.out.print("\007");
                         obstacles.removeIf(o -> o.throwable() && Physics.inThrowRange(player, o));
                     }
                     yield true;
@@ -115,7 +114,6 @@ public class Game {
         for (var o : obstacles) {
             if (Physics.collides(player, o)) {
                 state = State.GAME_OVER;
-                System.out.print("\007");
                 return;
             }
         }

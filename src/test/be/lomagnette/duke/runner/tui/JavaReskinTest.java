@@ -1,7 +1,5 @@
-package be.lomagnette.duke.runner;
+package be.lomagnette.duke.runner.tui;
 
-import be.lomagnette.duke.runner.tui.*;
-import be.lomagnette.qaly.runner.tui.*;
 import dev.tamboui.style.Color;
 import static be.lomagnette.duke.runner.TestRunner.*;
 
@@ -141,7 +139,8 @@ public class JavaReskinTest {
     public void testCharSpriteRecord() {
         var duke = Sprites.dukeRunning();
         assertTrue(duke instanceof Sprites.CharSprite, "should be CharSprite");
-        assertTrue(duke.body().length > 0, "duke running should have body points");
+        assertTrue(duke.pointCount() > 0, "duke running should have points");
+        assertFalse(duke.layers().isEmpty(), "duke running should have color layers");
     }
 
     public void testDukeSpritesMethods() {
@@ -150,22 +149,37 @@ public class JavaReskinTest {
         var throwing = Sprites.dukeThrowing();
         var sitting = Sprites.dukeSitting();
 
-        assertTrue(running.body().length > 0, "running body");
-        assertTrue(jumping.body().length > 0, "jumping body");
-        assertTrue(throwing.body().length > 0, "throwing body");
-        assertTrue(sitting.body().length > 0, "sitting body");
-        assertTrue(throwing.accent().length > 0, "throwing should have accent (red nose)");
+        assertTrue(running.pointCount() > 0, "running points");
+        assertTrue(jumping.pointCount() > 0, "jumping points");
+        assertTrue(throwing.pointCount() > 0, "throwing points");
+        assertTrue(sitting.pointCount() > 0, "sitting points");
+        assertTrue(throwing.hasColor(Sprites.DUKE_NOSE), "throwing should have a red nose layer");
+    }
+
+    public void testDukeSpritesAreMultiColor() {
+        // The half-block overhaul gives Duke a palette: blue body + red nose at least.
+        var running = Sprites.dukeRunning();
+        assertTrue(running.hasColor(Sprites.DUKE_BODY), "running should have a blue body layer");
+        assertTrue(running.hasColor(Sprites.DUKE_NOSE), "running should have a red nose layer");
     }
 
     // --- Task 6: New obstacle + decoration sprite shapes ---
 
     public void testObstacleSpriteShapes() {
-        assertTrue(Sprites.conferenceStage().length > 0, "conference stage sprite");
-        assertTrue(Sprites.laptopStackWide().length > 0, "laptop stack wide sprite");
-        assertTrue(Sprites.laptopStackTall().length > 0, "laptop stack tall sprite");
-        assertTrue(Sprites.coffeeSpill().length > 0, "coffee spill sprite");
-        assertTrue(Sprites.confusedIntern().length > 0, "confused intern sprite");
-        assertTrue(Sprites.slowBuildServer().length > 0, "slow build server sprite");
+        assertTrue(Sprites.conferenceStage().pointCount() > 0, "conference stage sprite");
+        assertTrue(Sprites.laptopStackWide().pointCount() > 0, "laptop stack wide sprite");
+        assertTrue(Sprites.laptopStackTall().pointCount() > 0, "laptop stack tall sprite");
+        assertTrue(Sprites.coffeeSpill().pointCount() > 0, "coffee spill sprite");
+        assertTrue(Sprites.confusedIntern().pointCount() > 0, "confused intern sprite");
+        assertTrue(Sprites.slowBuildServer().pointCount() > 0, "slow build server sprite");
+    }
+
+    public void testObstaclesAreMultiColor() {
+        // Screens glow, servers have warning LEDs — each obstacle carries a
+        // recognizable accent color distinct from its frame.
+        assertTrue(Sprites.laptopStackWide().hasColor(Sprites.OBST_SCREEN), "monitors have green screens");
+        assertTrue(Sprites.slowBuildServer().hasColor(Sprites.OBST_LED), "server has warning LEDs");
+        assertTrue(Sprites.confusedIntern().hasColor(Sprites.OBST_SKIN), "intern has a skin-tone head");
     }
 
     public void testDecorationSpriteShapes() {
@@ -180,9 +194,25 @@ public class JavaReskinTest {
     // --- Task 7: Visual polish verification ---
 
     public void testGameTitleIsDukeRunner() {
-        // Verify title text is updated by checking Renderer contains it
-        // We test via the Game flow: title text renders "D U K E   R U N N E R"
-        // This test verifies the constant exists in Renderer (compile-time check via reflection)
-        assertTrue(true, "title text compile check — verified in Renderer.java");
+        assertEquals("D U K E   R U N N E R", Renderer.TITLE_TEXT, "launch title text");
+    }
+
+    // --- Task 8: Launch screen explains how to play ---
+
+    public void testLaunchScreenExplainsJump() {
+        var hint = Renderer.JUMP_HINT;
+        assertTrue(hint.contains("SPACE"), "jump hint should name the SPACE key: " + hint);
+        assertTrue(hint.toLowerCase().contains("jump"), "jump hint should say 'jump': " + hint);
+    }
+
+    public void testLaunchScreenExplainsThrow() {
+        var hint = Renderer.THROW_HINT;
+        assertTrue(hint.contains("B"), "throw hint should name the B key: " + hint);
+        assertTrue(hint.toLowerCase().contains("throw"), "throw hint should say 'throw': " + hint);
+    }
+
+    public void testLaunchScreenExplainsStart() {
+        assertTrue(Renderer.START_HINT.contains("SPACE to start"),
+                "start hint should tell the player to press SPACE to start: " + Renderer.START_HINT);
     }
 }
