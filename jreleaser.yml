@@ -1,0 +1,33 @@
+project:
+  name: qaly-runner
+  description: A 2D endless runner terminal game written in modern Java
+  longDescription: |
+    Duke Runner is a 2D endless runner game built in modern Java. As your score
+    climbs, the game repaints itself through Java's history: Java 1 -> Java 5
+    -> Java 11 -> Java 21+.
+  links:
+    homepage: https://github.com/LoMagnette/DukeRunner
+  authors:
+    - Loic Magnette
+  license: MIT
+  inceptionYear: '2026'
+  languages:
+    java:
+      groupId: be.lomagnette.duke.runner
+      version: '26'
+
+release:
+  github:
+    owner: LoMagnette
+    name: DukeRunner
+    overwrite: true
+    tagName: 'v{{projectVersion}}'
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+
+distributions:
+  qaly-runner-tui:
+    type: SINGLE_JAR
+    artifacts:
+      - path: artifacts/qaly-runner-tui.jar
