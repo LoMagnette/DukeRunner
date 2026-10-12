@@ -30,4 +30,4 @@ distributions:
   qaly-runner-tui:
     type: SINGLE_JAR
     artifacts:
-      - path: artifacts/qaly-runner-tui.jar
+      - path: artifacts/duke-runner-tui.jar
