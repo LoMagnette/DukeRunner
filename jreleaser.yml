@@ -1,5 +1,5 @@
 project:
-  name: qaly-runner
+  name: duke-runner
   description: A 2D endless runner terminal game written in modern Java
   longDescription: |
     Duke Runner is a 2D endless runner game built in modern Java. As your score
